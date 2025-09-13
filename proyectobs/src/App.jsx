@@ -11,7 +11,11 @@ import HookUseMemo from './playground/HookUseMemo'
 import HookUseCallback from './playground/HookUseCallback'
 import HookUseTransition from './playground/HookUseTransition'
 import HookUseId from './playground/HookUseId'
-
+import HookUseEffect from './playground/HookUseId'
+import HookUseLayoutEffect from './playground/HookUseLayoutEffect'
+import HookUseInsersationEffect from './playground/HookUseInsersationEffect'
+import HookUseContext from './playground/HookUseContext'
+import HookUseSyncExternalStore from './playground/HookUseSyncExternalStore'
 
 function App() {
 
@@ -32,6 +36,13 @@ function App() {
       <Route path='/useCallback' element={<HookUseCallback/>} ></Route>
       <Route path='/useTransition' element={<HookUseTransition/>} ></Route>
       <Route path='/useId' element={<HookUseId/>} ></Route>
+      <Route path='/useEffect' element={<HookUseEffect/>} ></Route>
+      <Route path='/useLayoutEffect' element={<HookUseLayoutEffect/>} ></Route>
+      <Route path='/useInsersationEffect' element={<HookUseInsersationEffect/>} ></Route>
+      <Route path='/useContext' element={<HookUseContext/>} ></Route>
+      <Route path='/useSyncExternalStore' element={<HookUseSyncExternalStore/>} ></Route>
+
+
     </Routes>
    
    </BrowserRouter>

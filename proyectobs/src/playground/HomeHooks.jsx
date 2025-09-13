@@ -158,7 +158,7 @@ function HomeHooks() {
             <tr>
               <th scope="row">UseEffect</th>
               <td>
-                <a href="" className="list-group-item text-danger link-danger">
+                <a href="/useEffect" className="list-group-item text-danger link-danger">
                   Ir a UseEffect
                 </a>
               </td>
@@ -168,7 +168,7 @@ function HomeHooks() {
             <tr>
               <th scope="row">UseLayoutEffect</th>
               <td>
-                <a href="" className="list-group-item text-danger link-danger">
+                <a href="/useLayoutEffect" className="list-group-item text-danger link-danger">
                   Ir a UseLayoutEffect
                 </a>
               </td>
@@ -181,7 +181,7 @@ function HomeHooks() {
             <tr>
               <th scope="row">UseInsersationEffect</th>
               <td>
-                <a href="" className="list-group-item text-danger link-danger">
+                <a href="/useInsersationEffect" className="list-group-item text-danger link-danger">
                   Ir a UseInsersationEffect{" "}
                 </a>
               </td>
@@ -194,10 +194,7 @@ function HomeHooks() {
             <tr>
               <th scope="row">UseContext</th>
               <td>
-                <a
-                  href=""
-                  className="list-group-item text-danger link-danger opacity-75"
-                >
+                <a href="/useContext" className="list-group-item text-danger link-danger opacity-75">
                   Ir a UseContext
                 </a>
               </td>
@@ -210,7 +207,7 @@ function HomeHooks() {
               <th scope="row">UseSyncExternalStore</th>
               <td>
                 <a
-                  href=""
+                  href="/useSyncExternalStore"
                   className="list-group-item text-danger link-danger opacity-75"
                 >
                   Ir a UseSyncExternalStore
