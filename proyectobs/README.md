@@ -1,12 +1,18 @@
-# React + Vite
+# Qué es un Hook
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Un Hook es una función de javascript que permite crear/acceder al estado y a los ciclos de vida de React y que, para asegurar la estabilidad de la aplicación, debe de utilizarse siguiendo dos reglas básicas:
 
-Currently, two official plugins are available:
+• Debe de ser llamado en el nivel superior de la aplicación - Un hook nunca debe de llamarse dentro de ciclos, condicionales o funciones anidadas, ya que el orden de llamada de los hooks debe de ser siempre el mismo para asegurar que el resultado sea predecible durante la renderización. Este uso únicamente en el nivel superior es lo que asegura que el estado interno de React se preserve correctamente entre diferentes llamadas del mismo hook.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+• Debe de llamarse en funciones o en otros hooks personalizados de React - Un hook nunca debe de ser llamado fuera de una función de React o de otro hook personalizado, de forma que la lógica de estado del componente sea cláramente visible desde el resto del código para el scope establecido por React.
 
-## Expanding the ESLint configuration
+# Categorías y Hooks oficiales (React 19)
+Debug: useDebugValue
+Estado: useState, useReducer
+Referencias: useRef, useImperativeHandle
+Performance: useMemo, useCallback, useTransition, useDeferredValue
+Efectos / ciclo de vida: useEffect, useLayoutEffect, useInsertionEffect
+Contexto y datos externos: useContext, useSyncExternalStore, useId
+Nuevos en React 19: use, useOptimistic, useFormStatus, useActionState
+En React 19 existen ahora ~19 hooks oficiales. Además, puedes crear Custom Hooks combinando los existentes para encapsular lógica reutilizable.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
