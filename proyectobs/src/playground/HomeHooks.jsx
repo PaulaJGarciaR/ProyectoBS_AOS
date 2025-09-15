@@ -238,7 +238,7 @@ function HomeHooks() {
             <tr>
               <th scope="row">Use</th>
               <td>
-                <a href="" className="list-group-item text-danger link-danger">
+                <a href="/use" className="list-group-item text-danger link-danger">
                   Ir a Use
                 </a>
               </td>
@@ -251,7 +251,7 @@ function HomeHooks() {
             <tr>
               <th scope="row">UseOptimistic</th>
               <td>
-                <a href="" className="list-group-item text-danger link-danger">
+                <a href="/useOptimistic" className="list-group-item text-danger link-danger">
                   Ir a UseOptimistic
                 </a>
               </td>
@@ -264,7 +264,7 @@ function HomeHooks() {
             <tr>
               <th scope="row">UseFormStatus</th>
               <td>
-                <a href="" className="list-group-item tedanger link-danger">
+                <a href="/useFormStatus" className="list-group-item text-danger link-danger">
                   Ir a UseFormStatus{" "}
                 </a>
               </td>
@@ -276,7 +276,7 @@ function HomeHooks() {
             <tr>
               <th scope="row">UseActionState</th>
               <td>
-                <a href="" className="list-group-item text-danger link-danger">
+                <a href="/useActionState" className="list-group-item text-danger link-danger">
                   Ir a UseActionState
                 </a>
               </td>
