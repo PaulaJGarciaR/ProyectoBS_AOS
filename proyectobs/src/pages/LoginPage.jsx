@@ -7,7 +7,7 @@ function LoginPage() {
         <div className="w-[100%] flex justify-center shadow-inner">
           <div className="w-[55%] flex justify-end shadow-inner">
             <img
-              className="rounded-l-2xl"
+              className="rounded-l-2xl w-full"
               src="https://cubiko.co/wp-content/uploads/2023/01/course-9.jpg"
               alt=""
             />
@@ -46,7 +46,7 @@ function LoginPage() {
 
                 <div className="flex justify-center">
                   <h1>¿Ya tienes Cuenta?</h1>
-                  <a href="" className="ml-2 text-indigo-800 font-bold underline">Registrate</a>
+                  <a href="/register" className="ml-2 text-indigo-800 font-bold underline">Registrate</a>
                 </div>
               </form>
           </div>
