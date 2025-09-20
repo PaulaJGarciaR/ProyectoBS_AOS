@@ -22,6 +22,7 @@ import HookUseFormStatus from './playground/HookUseFormStatus'
 import HookUseActionState from './playground/HookUseActionState'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
+import RegisterPage from './pages/RegisterPage'
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
       <Route path='/' element={<HomePage/>} ></Route>
       <Route path='/hooks' element={<HomeHooks/>} ></Route>
       <Route path='/login' element={<LoginPage/>} ></Route>
+      <Route path='/register' element={<RegisterPage/>} ></Route>
 
       <Route path='/useState' element={<HookUseState/>} ></Route>
       <Route path='/useNavigate' element={<HookUseNavigate/>} ></Route>
