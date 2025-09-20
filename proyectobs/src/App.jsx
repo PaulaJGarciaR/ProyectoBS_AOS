@@ -23,6 +23,8 @@ import HookUseActionState from './playground/HookUseActionState'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
 import RegisterPage from './pages/RegisterPage'
+import Dashboard from './pages/Dashboard'
+
 
 
 function App() {
@@ -35,6 +37,7 @@ function App() {
       <Route path='/hooks' element={<HomeHooks/>} ></Route>
       <Route path='/login' element={<LoginPage/>} ></Route>
       <Route path='/register' element={<RegisterPage/>} ></Route>
+      <Route path='/dashboard' element={<Dashboard/>} ></Route>
 
       <Route path='/useState' element={<HookUseState/>} ></Route>
       <Route path='/useNavigate' element={<HookUseNavigate/>} ></Route>
