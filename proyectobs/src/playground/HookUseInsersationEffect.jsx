@@ -22,15 +22,28 @@ function ComponenteConEstilos() {
   }, [color]);
 
   return (
-    <div>
+    <div className="max-w-md mx-auto p-6 space-y-4">
       <div className="mi-caja">Caja con estilo dinámico</div>
-      <button onClick={() => setColor("teal")}>Cambiar a Teal</button>
-      <button onClick={() => setColor("crimson")}>Cambiar a Rojo</button>
+      
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button 
+          onClick={() => setColor("teal")}
+          className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
+        >
+          Cambiar a Teal
+        </button>
+        <button 
+          onClick={() => setColor("crimson")}
+          className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
+        >
+          Cambiar a Rojo
+        </button>
+      </div>
 
       {/* Enlace para ir a Home */}
       <a
         href="/"
-        className="list-group-item bg-dark text-white link-secondary mt-4 py-2 px-5 rounded"
+        className="inline-block bg-gray-800 hover:bg-gray-900 text-white hover:text-gray-300 py-2 px-5 rounded-md transition-all duration-200 text-center w-full"
       >
         Ir a Home
       </a>

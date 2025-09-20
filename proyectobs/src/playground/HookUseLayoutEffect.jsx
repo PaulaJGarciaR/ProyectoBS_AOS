@@ -11,27 +11,22 @@ function Componente() {
   }, []);
 
   return (
-    <div>
+    <div className="p-4">
+      <div className="flex justify-center">
+        
+      </div>
       <div
         ref={divRef}
-        style={{
-          width: "50%",
-          height: "100px",
-          background: "purple",
-          color: "white",
-          textAlign: "center",
-          lineHeight: "100px",
-          borderRadius: "10px"
-        }}
+        className="w-1/2 h-24 bg-purple-600 text-white text-center leading-24 rounded-lg"
       >
         Caja
       </div>
-      <p>El ancho de la caja es: {ancho}px</p>
+      <p className="mt-4 text-gray-700">El ancho de la caja es: {ancho}px</p>
 
       {/* ir a Home */}
       <a
         href="/"
-        className="list-group-item bg-dark text-white link-secondary mt-4 py-2 px-5 rounded"
+        className="inline-block bg-gray-800 text-white hover:bg-gray-700 mt-4 py-2 px-5 rounded no-underline transition-colors"
       >
         Ir a Home
       </a>
