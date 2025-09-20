@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useDebugValue } from 'react';
+import React, { useState, useEffect, useDebugValue } from "react";
 
 function useCurrentTime() {
   const [time, setTime] = useState(new Date());
@@ -19,10 +19,17 @@ function Clock() {
   const currentTime = useCurrentTime();
 
   return (
-    <div>
-      <h2>Hora actual:</h2>
-      <p>{currentTime.toLocaleTimeString()}</p>
-      <a href="/" className='list-group-item bg-dark text-white link-secondary  py-2 px-5 rounded'>Ir a Home</a>
+    <div className="text-center space-y-4 max-w-sm mx-auto p-6">
+      <h2 className="text-2xl font-bold text-gray-800">Hora actual:</h2>
+      <p className="text-xl text-gray-600 font-mono bg-gray-100 py-2 px-4 rounded-md">
+        {currentTime.toLocaleTimeString()}
+      </p>
+      <a
+        href="/"
+        className="inline-block bg-gray-800 hover:bg-gray-900 text-white hover:text-gray-300 py-2 px-5 rounded-md transition-all duration-200"
+      >
+        Ir a Home
+      </a>
     </div>
   );
 }

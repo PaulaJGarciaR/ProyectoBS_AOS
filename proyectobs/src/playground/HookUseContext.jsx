@@ -22,24 +22,40 @@ function Perfil() {
   const { usuario, login, logout } = useContext(UsuarioContext);
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
+    <div className="p-5 text-center max-w-md mx-auto">
       {usuario ? (
-        <>
-          <h2>Bienvenido, {usuario.nombre} 👋</h2>
-          <p>Rol: {usuario.rol}</p>
-          <button onClick={logout}>Cerrar sesión</button>
-        </>
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Bienvenido, {usuario.nombre} 👋
+          </h2>
+          <p className="text-lg text-gray-600">
+            Rol: <span className="font-medium text-gray-800">{usuario.rol}</span>
+          </p>
+          <button 
+            onClick={logout}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-md transition-colors duration-200"
+          >
+            Cerrar sesión
+          </button>
+        </div>
       ) : (
-        <>
-          <h2>No has iniciado sesión</h2>
-          <button onClick={login}>Iniciar sesión</button>
-        </>
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold text-gray-800">
+            No has iniciado sesión
+          </h2>
+          <button 
+            onClick={login}
+            className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-md transition-colors duration-200"
+          >
+            Iniciar sesión
+          </button>
+        </div>
       )}
 
       {/* Enlace para ir a Home */}
       <a
         href="/"
-        className="list-group-item bg-dark text-white link-secondary mt-4 py-2 px-5 rounded"
+        className="inline-block bg-gray-800 hover:bg-gray-900 text-white hover:text-gray-300 mt-6 py-2 px-5 rounded-md transition-all duration-200"
       >
         Ir a Home
       </a>

@@ -37,23 +37,38 @@ function ContadorGlobal() {
   const contador = useSyncExternalStore(subscribe, getSnapshot);
 
   return (
-    <div style={{ textAlign: "center", padding: "30px" }}>
-      <h2>🔥 Contador Global con useSyncExternalStore</h2>
-      <p style={{ fontSize: "2rem", margin: "20px 0" }}>{contador}</p>
-      <button onClick={increment} style={{ margin: "5px" }}>
-        ➕ Incrementar
-      </button>
-      <button onClick={decrement} style={{ margin: "5px" }}>
-        ➖ Decrementar
-      </button>
-      <button onClick={reset} style={{ margin: "5px" }}>
-        🔄 Reset
-      </button>
+    <div className="text-center p-8 max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-6">
+        Contador Global con useSyncExternalStore
+      </h2>
+
+      <p className="text-4xl font-bold my-5 text-blue-600">{contador}</p>
+
+      <div className="flex gap-2 justify-center mb-6">
+        <button
+          onClick={increment}
+          className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded transition-colors"
+        >
+          Incrementar
+        </button>
+        <button
+          onClick={decrement}
+          className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition-colors"
+        >
+          Decrementar
+        </button>
+        <button
+          onClick={reset}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition-colors"
+        >
+          Reset
+        </button>
+      </div>
 
       {/* Ir a Home */}
       <a
         href="/"
-        className="list-group-item bg-dark text-white link-secondary mt-4 py-2 px-5 rounded"
+        className="inline-block bg-gray-800 text-white hover:bg-gray-700 mt-4 py-2 px-5 rounded text-center no-underline transition-colors"
       >
         Ir a Home
       </a>
