@@ -1,7 +1,7 @@
-"use client"; // Solo si usas Next.js / React Server Components
+"use client"; 
 
 import React, { useOptimistic } from "react";
-import { Link } from "react-router-dom";
+
 
 function HookUseOptimistic() {
   const [optimisticCount, addOptimisticCount] = useOptimistic(
@@ -14,22 +14,31 @@ function HookUseOptimistic() {
   }
 
   return (
-    <div className="container justify-content-center">
+    <div className="container mx-auto flex justify-center p-4">
       <div className="text-center">
-        <h2>Ejemplo de useOptimistic</h2>
-        <div className="list-group">
-          <p className="list-group-item">Contador optimista: {optimisticCount}</p>
-          <button onClick={handleClick} className="btn btn-primary mt-3">
+        <h2 className="text-2xl font-bold mb-6">Ejemplo de useOptimistic</h2>
+        <div className="flex flex-col gap-4 max-w-md">
+          <p className="bg-gray-100 border border-gray-200 rounded px-4 py-3">
+            Contador optimista: {optimisticCount}
+          </p>
+          
+          <button 
+            onClick={handleClick} 
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition-colors"
+          >
             Sumar +1
           </button>
 
-          <Link to="/name-route" className="btn btn-success mt-3">
+          <a 
+            href="/name-route" 
+            className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded text-center no-underline transition-colors"
+          >
             Ruta de ejemplo
-          </Link>
+          </a>
 
           <a
             href="/"
-            className="list-group-item bg-dark text-white link-secondary mt-4 py-2 px-5 rounded"
+            className="bg-gray-800 text-white hover:bg-gray-700 mt-4 py-2 px-5 rounded text-center no-underline transition-colors"
           >
             Ir a Home
           </a>

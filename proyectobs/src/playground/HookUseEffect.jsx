@@ -13,5 +13,8 @@ function PageTitleChanger() {
       value={title}
       onChange={(e) => setTitle(e.target.value)}
     />
+    
   );
 }
+
+export default PageTitleChanger;
