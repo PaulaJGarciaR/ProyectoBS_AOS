@@ -7,7 +7,7 @@ function HomePage() {
         <h1 className="text-center my-6 text-3xl font-bold">HomePage</h1>
         <div className="flex justify-evenly pb-4">
           <a href="/login" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Login</a>
-          <a href="" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Register</a>
+          <a href="/register" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Register</a>
           <a href="/hooks" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Hooks</a>
         </div>
       </div>
