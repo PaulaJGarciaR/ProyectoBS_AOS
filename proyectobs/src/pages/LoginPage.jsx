@@ -38,7 +38,7 @@ function LoginPage() {
       await signInWithEmailAndPassword(auth, emailLower, password);
 
       Swal.fire("Bienvenido", "Inicio de sesión exitoso", "success");
-      navigate("/"); // 👈 redirige al home o donde quieras
+      navigate("/");
     } catch (error) {
       console.error("Error en login: ", error);
 
@@ -140,7 +140,8 @@ function LoginPage() {
               </div>
             </form>
           </div>
-        </div>      </div>
+        </div>
+      </div>
     </div>
   );
 }

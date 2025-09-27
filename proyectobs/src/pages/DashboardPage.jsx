@@ -1,18 +1,18 @@
 export default function Dashboard() {
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-indigo-950">
       {/* Barra lateral */}
-      <aside className="w-64 bg-gray-900 text-white flex flex-col">
-        <div className="p-6 text-2xl font-bold border-b border-gray-700">
+      <aside className="w-64 bg-indigo-800 text-white flex flex-col">
+        <div className="p-6 text-2xl font-bold">
           Mi Panel
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">🏠 Inicio</a>
-          <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">📊 Análisis</a>
-          <a href="#" className="block py-2 px-4 rounded hover:bg-gray-700">⚙️ Configuración</a>
+          <a href="#" className="block py-2 px-4 rounded-2xl hover:bg-indigo-300">🏠 Inicio</a>
+          <a href="#" className="block py-2 px-4 rounded hover:bg-indigo-300">📊 Análisis</a>
+          <a href="#" className="block py-2 px-4 rounded hover:bg-indigo-300">⚙️ Configuración</a>
         </nav>
         <div className="p-4 border-t border-gray-700">
-          <button className="w-full py-2 px-4 bg-red-500 rounded hover:bg-red-600">
+          <button className="w-full py-2 px-4 bg-indigo-400 rounded hover:bg-indigo-600">
             Cerrar sesión
           </button>
         </div>
