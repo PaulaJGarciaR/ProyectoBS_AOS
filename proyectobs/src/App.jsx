@@ -24,7 +24,7 @@ import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
-
+import ForgotPassword from './pages/ForgotPassword'
 
 
 function App() {
@@ -38,6 +38,7 @@ function App() {
       <Route path='/login' element={<LoginPage/>} ></Route>
       <Route path='/register' element={<RegisterPage/>} ></Route>
       <Route path='/dashboard' element={<DashboardPage/>} ></Route>
+      <Route path='/forgotpassword' element={<ForgotPassword/>} ></Route>
 
       <Route path='/useState' element={<HookUseState/>} ></Route>
       <Route path='/useNavigate' element={<HookUseNavigate/>} ></Route>

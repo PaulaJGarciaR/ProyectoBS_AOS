@@ -33,7 +33,7 @@ function LoginPage() {
                   </div>
                 </div>
                 <div className="flex justify-end-safe mt-4 mr-12">
-                  <a className="font-semibold text-indigo-800" href="">
+                  <a className="font-semibold text-indigo-800" href="/forgotpassword">
                     ¿Olvidaste tu contraseña?
                   </a>
                 </div>
