@@ -25,6 +25,7 @@ import HomePage from './pages/HomePage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import ForgotPassword from './pages/ForgotPassword'
+import ChangePassword from './pages/ChangePasswordPage'
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
       <Route path='/register' element={<RegisterPage/>} ></Route>
       <Route path='/dashboard' element={<DashboardPage/>} ></Route>
       <Route path='/forgotpassword' element={<ForgotPassword/>} ></Route>
+      <Route path='/changepassword' element={<ChangePassword/>} ></Route>
 
       <Route path='/useState' element={<HookUseState/>} ></Route>
       <Route path='/useNavigate' element={<HookUseNavigate/>} ></Route>
