@@ -1,17 +1,32 @@
 import './App.css'
-import HookUseState from './playground/HookUseState'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+
+/* Páginas principales */
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import DashboardPage from './pages/DashboardPage'
+import ForgotPassword from './pages/ForgotPassword'
+import ChangePassword from './pages/ChangePasswordPage'
+
+/* CRUD */
+import Users from './components/UsersPage'
+import Products from './components/ProductsPage'
+import Staff from './components/StaffPage'
+
+/* Playground hooks */
 import HomeHooks from './playground/HomeHooks'
+import HookUseState from './playground/HookUseState'
 import HookUseNavigate from './playground/HookUseNavigate'
 import HookUseDebugValue from './playground/HookUseDebugValue'
 import HookUseReducer from './playground/HookUseReducer'
 import HookUseRef from './playground/HookUseRef'
-import HookUseImperativeHandle from './playground/HookImperativeHandle'
+import HookImperativeHandle from './playground/HookImperativeHandle'
 import HookUseMemo from './playground/HookUseMemo'
 import HookUseCallback from './playground/HookUseCallback'
 import HookUseTransition from './playground/HookUseTransition'
 import HookUseId from './playground/HookUseId'
-import HookUseEffect from './playground/HookUseId'
+import HookUseEffect from './playground/HookUseEffect'
 import HookUseLayoutEffect from './playground/HookUseLayoutEffect'
 import HookUseInsersationEffect from './playground/HookUseInsersationEffect'
 import HookUseContext from './playground/HookUseContext'
@@ -20,59 +35,48 @@ import HookUse from './playground/HookUse'
 import HookUseOptimistic from './playground/HookUseOptimistic'
 import HookUseFormStatus from './playground/HookUseFormStatus'
 import HookUseActionState from './playground/HookUseActionState'
-import LoginPage from './pages/LoginPage'
-import HomePage from './pages/HomePage'
-import RegisterPage from './pages/RegisterPage'
-import DashboardPage from './pages/DashboardPage'
-import ForgotPassword from './pages/ForgotPassword'
-import ChangePassword from './pages/ChangePasswordPage'
-import Users from './components/UsersPage'
-import Products from './components/ProductsPage'
-import Staff from './components/StaffPage'
-
 
 function App() {
-
   return (
-   <BrowserRouter>
-    <Routes>
-      {/*Rutas */}
-      <Route path='/' element={<HomePage/>} ></Route>
-      <Route path='/hooks' element={<HomeHooks/>} ></Route>
-      <Route path='/login' element={<LoginPage/>} ></Route>
-      <Route path='/register' element={<RegisterPage/>} ></Route>
-      <Route path='/dashboard' element={<DashboardPage/>} ></Route>
-      <Route path='/forgotpassword' element={<ForgotPassword/>} ></Route>
-      <Route path='/changepassword' element={<ChangePassword/>} ></Route>
-      <Route path='/users' element={<Users/>} ></Route>
-      <Route path='/products' element={<Products/>} ></Route>
-      <Route path='/Staff' element={<Staff/>} ></Route>
+    <BrowserRouter>
+      <Routes>
+        {/* Rutas públicas */}
+        <Route path='/' element={<HomePage />} />
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/register' element={<RegisterPage />} />
+        <Route path='/forgotpassword' element={<ForgotPassword />} />
+        <Route path='/changepassword' element={<ChangePassword />} />
 
+        {/* Dashboard con rutas hijas */}
+        <Route path='/dashboard/*' element={<DashboardPage />}>
+          <Route path='users' element={<Users />} />
+          <Route path='products' element={<Products />} />
+          <Route path='staff' element={<Staff />} />
+        </Route>
 
-      <Route path='/useState' element={<HookUseState/>} ></Route>
-      <Route path='/useNavigate' element={<HookUseNavigate/>} ></Route>
-      <Route path='/useDebugValue' element={<HookUseDebugValue/>} ></Route>
-      <Route path='/useReducer' element={<HookUseReducer/>} ></Route>
-      <Route path='/useRef' element={<HookUseRef/>} ></Route>
-      <Route path='/useRef' element={<HookUseRef/>} ></Route>
-      <Route path='/useImperativeHandle' element={<HookUseImperativeHandle/>} ></Route>
-      <Route path='/useMemo' element={<HookUseMemo/>} ></Route>
-      <Route path='/useCallback' element={<HookUseCallback/>} ></Route>
-      <Route path='/useCallback' element={<HookUseCallback/>} ></Route>
-      <Route path='/useTransition' element={<HookUseTransition/>} ></Route>
-      <Route path='/useId' element={<HookUseId/>} ></Route>
-      <Route path='/useEffect' element={<HookUseEffect/>} ></Route>
-      <Route path='/useLayoutEffect' element={<HookUseLayoutEffect/>} ></Route>
-      <Route path='/useInsersationEffect' element={<HookUseInsersationEffect/>} ></Route>
-      <Route path='/useContext' element={<HookUseContext/>} ></Route>
-      <Route path='/useSyncExternalStore' element={<HookUseSyncExternalStore/>} ></Route>
-      <Route path='/use' element={<HookUse/>} ></Route>
-      <Route path='/useOptimistic' element={<HookUseOptimistic/>} ></Route>
-      <Route path='/useFormStatus' element={<HookUseFormStatus/>} ></Route>
-      <Route path='/useActionState' element={<HookUseActionState/>} ></Route>
-    </Routes>
-   
-   </BrowserRouter>
+        {/* Playground de hooks */}
+        <Route path='/hooks' element={<HomeHooks />} />
+        <Route path='/useState' element={<HookUseState />} />
+        <Route path='/useNavigate' element={<HookUseNavigate />} />
+        <Route path='/useDebugValue' element={<HookUseDebugValue />} />
+        <Route path='/useReducer' element={<HookUseReducer />} />
+        <Route path='/useRef' element={<HookUseRef />} />
+        <Route path='/ImperativeHandle' element={<HookImperativeHandle />} />
+        <Route path='/useMemo' element={<HookUseMemo />} />
+        <Route path='/useCallback' element={<HookUseCallback />} />
+        <Route path='/useTransition' element={<HookUseTransition />} />
+        <Route path='/useId' element={<HookUseId />} />
+        <Route path='/useEffect' element={<HookUseEffect />} />
+        <Route path='/useLayoutEffect' element={<HookUseLayoutEffect />} />
+        <Route path='/useInsersationEffect' element={<HookUseInsersationEffect />} />
+        <Route path='/useContext' element={<HookUseContext />} />
+        <Route path='/useSyncExternalStore' element={<HookUseSyncExternalStore />} />
+        <Route path='/use' element={<HookUse />} />
+        <Route path='/useOptimistic' element={<HookUseOptimistic />} />
+        <Route path='/useFormStatus' element={<HookUseFormStatus />} />
+        <Route path='/useActionState' element={<HookUseActionState />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

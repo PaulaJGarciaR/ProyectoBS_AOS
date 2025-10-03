@@ -1,40 +1,155 @@
-function StaffPage(){
-    return(
-        <div class="container mx-auto px-4 py-8">
-  <h2 class="text-2xl font-semibold mb-4">Lista de Personal</h2>
+import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import { db } from "../firebase"; // tu config de Firebase
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white border border-gray-200 rounded-md shadow-sm">
-      <thead>
-        <tr class="bg-gray-100 text-left text-sm font-semibold text-gray-700">
-          <th class="px-6 py-3 border-b">ID</th>
-          <th class="px-6 py-3 border-b">Nombre</th>
-          <th class="px-6 py-3 border-b">Email</th>
-          <th class="px-6 py-3 border-b">Cargo</th>
-          <th class="px-6 py-3 border-b">Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="text-sm text-gray-700">
-        <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 border-b">1</td>
-          <td class="px-6 py-4 border-b">Juan Pérez</td>
-          <td class="px-6 py-4 border-b">juan@example.com</td>
-          <td class="px-6 py-4 border-b flex gap-2">
-            <button class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded">Editar</button>
-            <button class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+function StaffCRUD() {
+  const [staff, setStaff] = useState([]);
+  const [formData, setFormData] = useState({ name: "", email: "", role: "" });
+  const [editId, setEditId] = useState(null);
 
-  <div class="mt-4">
-    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm">Agregar Usuario</button>
-  </div>
-</div>
-    )
+  const staffCollection = collection(db, "staff"); // colección en Firestore
+
+  // Cargar datos desde Firestore
+  const fetchStaff = async () => {
+    const snapshot = await getDocs(staffCollection);
+    const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    setStaff(data);
+  };
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
+
+  // Agregar o actualizar staff
+  const handleAddOrUpdate = async () => {
+    if (!formData.name || !formData.email || !formData.role) {
+      Swal.fire("Error", "Todos los campos son obligatorios", "error");
+      return;
+    }
+
+    if (editId) {
+      // Editar en Firestore
+      const staffDoc = doc(db, "staff", editId);
+      await updateDoc(staffDoc, formData);
+      Swal.fire("Actualizado", "Miembro de staff editado correctamente", "success");
+      setEditId(null);
+    } else {
+      // Agregar en Firestore
+      await addDoc(staffCollection, formData);
+      Swal.fire("Éxito", "Miembro de staff agregado correctamente", "success");
+    }
+
+    setFormData({ name: "", email: "", role: "" });
+    fetchStaff(); // refrescar lista
+  };
+
+  // Eliminar miembro de staff
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esta acción",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#7c3aed",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const staffDoc = doc(db, "staff", id);
+        await deleteDoc(staffDoc);
+        Swal.fire("Eliminado", "El miembro de staff fue eliminado", "success");
+        fetchStaff();
+      }
+    });
+  };
+
+  // Cargar datos en el formulario para editar
+  const handleEdit = (person) => {
+    setFormData({ name: person.name, email: person.email, role: person.role });
+    setEditId(person.id);
+  };
+
+  return (
+    <div className="p-6 bg-gray-900 min-h-screen text-gray-100">
+      <h2 className="text-2xl font-bold mb-4 text-purple-400">CRUD Staff</h2>
+
+      {/* Formulario */}
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input
+          type="text"
+          placeholder="Nombre"
+          className="bg-gray-800 border border-purple-500 p-2 rounded text-gray-100 placeholder-gray-400"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          className="bg-gray-800 border border-purple-500 p-2 rounded text-gray-100 placeholder-gray-400"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Cargo"
+          className="bg-gray-800 border border-purple-500 p-2 rounded text-gray-100 placeholder-gray-400"
+          value={formData.role}
+          onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+        />
+      </div>
+      <button
+        onClick={handleAddOrUpdate}
+        className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+      >
+        {editId ? "Actualizar Staff" : "Agregar Staff"}
+      </button>
+
+      {/* Tabla */}
+      <table className="w-full mt-6 border-collapse">
+        <thead>
+          <tr className="bg-purple-700 text-left text-white">
+            <th className="p-2 border border-purple-500">ID</th>
+            <th className="p-2 border border-purple-500">Nombre</th>
+            <th className="p-2 border border-purple-500">Email</th>
+            <th className="p-2 border border-purple-500">Cargo</th>
+            <th className="p-2 border border-purple-500">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {staff.map((person) => (
+            <tr key={person.id} className="hover:bg-gray-800">
+              <td className="p-2 border border-purple-500">{person.id}</td>
+              <td className="p-2 border border-purple-500">{person.name}</td>
+              <td className="p-2 border border-purple-500">{person.email}</td>
+              <td className="p-2 border border-purple-500">{person.role}</td>
+              <td className="p-2 border border-purple-500 flex gap-2">
+                <button
+                  onClick={() => handleEdit(person)}
+                  className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => handleDelete(person.id)}
+                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
-
-
-
-export default StaffPage;
+export default StaffCRUD;
