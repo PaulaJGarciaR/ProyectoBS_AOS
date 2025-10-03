@@ -11,9 +11,6 @@ function HomePage() {
           <a href="/hooks" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Hooks</a>
           <a href="/dashboard" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Dashboard</a>
           <a href="/changepassword" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Change Password</a>
-          <a href="/users" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Users</a>
-          <a href="/staff" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Staff</a>
-          <a href="/products" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Products</a>
 
         </div>
       </div>
