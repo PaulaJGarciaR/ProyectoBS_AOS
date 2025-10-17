@@ -212,7 +212,6 @@ function UsersPage() {
         <table className="w-full">
         <thead className="bg-purple-700 text-white">
           <tr className="text-left text-white">
-            <th className="p-2">ID</th>
             <th className="p-2">Nombre</th>
             <th className="p-2">Apellido</th>
             <th className="p-2">Email</th>
@@ -223,7 +222,6 @@ function UsersPage() {
         <tbody>
           {usuarios.map((person) => (
             <tr key={person.id} className="hover:bg-gray-800">
-              <td className="p-2">{person.id}</td>
               <td className="p-2 whitespace-nowrap">
                 {person.nombre}
               </td>
