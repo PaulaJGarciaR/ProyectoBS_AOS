@@ -8,10 +8,10 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import ForgotPassword from './pages/ForgotPassword'
 import ChangePassword from './pages/ChangePasswordPage'
+import SessionsTable from './components/SessionsTable'
 
 /* CRUD */
 import Users from './components/UsersPage'
-import Products from './components/ProductsPage'
 import Staff from './components/StaffPage'
 
 /* Playground hooks */
@@ -46,11 +46,11 @@ function App() {
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/forgotpassword' element={<ForgotPassword />} />
         <Route path='/changepassword' element={<ChangePassword />} />
+        <Route path='/sessions' element= {<SessionsTable /> }></Route>
 
         {/* Dashboard con rutas hijas */}
         <Route path='/dashboard/*' element={<DashboardPage />}>
           <Route path='users' element={<Users />} />
-          <Route path='products' element={<Products />} />
           <Route path='staff' element={<Staff />} />
         </Route>
 

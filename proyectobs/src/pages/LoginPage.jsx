@@ -4,8 +4,10 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  GithubAuthProvider,
+  linkWithPopup
 } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import Swal from "sweetalert2";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -27,13 +29,116 @@ function LoginPage() {
     });
   };
 
-  // Función para verificar si el usuario existe en Firestore
-  const checkUserExists = async (uid) => {
+  const findUserByEmail = async (email) => {
     try {
-      const userDoc = await getDoc(doc(db, "usuarios", uid));
-      return userDoc.exists();
+      const emailLower = email.toLowerCase();
+      
+      const usersRef = collection(db, "usuarios");
+      const snapshot = await getDocs(usersRef);
+      
+      let foundUser = null;
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.correo && data.correo.toLowerCase() === emailLower) {
+          foundUser = { id: doc.id, ...data };
+        }
+      });
+      
+      if (!foundUser) {
+        console.log(` No se encontró usuario con email: ${emailLower}`);
+      }
+      
+      return foundUser;
     } catch (error) {
-      console.error("Error al verificar usuario:", error);
+      console.error("Error buscando usuario por email:", error);
+      return null;
+    }
+  };
+
+  const createOrUpdateUser = async (user, provider) => {
+    try {
+      const userEmail = user.email?.toLowerCase() || `${user.uid}@${provider}.user`;
+      
+      const existingUser = await findUserByEmail(userEmail);
+      
+      let finalUid;
+      let userRef;
+
+      if (existingUser && existingUser.uid) {
+        finalUid = existingUser.uid;
+        userRef = doc(db, "usuarios", finalUid);
+      } else {
+        finalUid = user.uid;
+        userRef = doc(db, "usuarios", finalUid);
+
+      }
+
+      // Obtener documento actual
+      const userDoc = await getDoc(userRef);
+      
+      const userData = {
+        uid: finalUid,
+        correo: userEmail,
+        photoURL: user.photoURL || "",
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (!userDoc.exists()) {
+        // Crear nuevo documento
+        await setDoc(userRef, {
+          ...userData,
+          providers: [provider],
+          createdAt: new Date().toISOString(),
+          estado: "activo",
+          rol: "visitante",
+        });
+        console.log(` Documento CREADO: usuarios/${finalUid}`);
+      } else {
+        const existingData = userDoc.data();
+        const providers = existingData.providers || [];
+        
+        await setDoc(userRef, {
+          ...existingData, 
+          ...userData, 
+          providers: providers.includes(provider) 
+            ? providers 
+            : [...providers, provider],
+        }, { merge: true });
+        
+        console.log(`Documento ACTUALIZADO: usuarios/${finalUid}`);
+        console.log(`Providers actualizados: ${[...providers, provider].join(', ')}`);
+      }
+      
+      console.log("======================");
+      return finalUid;
+    } catch (error) {
+      console.error("❌ Error al crear/actualizar usuario:", error);
+      return null;
+    }
+  };
+
+  // Crear documento de sesión
+  const createSessionDocument = async (userId, user, provider) => {
+    try {
+      const sessionId = `${userId}_${Date.now()}`;
+      const sessionRef = doc(db, "sesiones", sessionId);
+      
+      await setDoc(sessionRef, {
+        userId: userId,
+        email: user.email || "",
+        displayName: user.displayName || "",
+        photoURL: user.photoURL || "",
+        provider: provider,
+        loginTime: new Date().toISOString(),
+        timestamp: Date.now(),
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+      });
+      
+      console.log(`Sesión creada: ${sessionId}`);
+      return true;
+    } catch (error) {
+      console.error(" Error al crear sesión:", error);
       return false;
     }
   };
@@ -52,7 +157,6 @@ function LoginPage() {
     try {
       const emailLower = correo.toLowerCase();
 
-      // Autenticación en Firebase
       const userCredential = await signInWithEmailAndPassword(
         auth,
         emailLower,
@@ -61,10 +165,10 @@ function LoginPage() {
       const user = userCredential.user;
 
       // Verificar si el usuario existe en Firestore
-      const exists = await checkUserExists(user.uid);
+      const userRef = doc(db, "usuarios", user.uid);
+      const userDoc = await getDoc(userRef);
 
-      if (!exists) {
-        // Si no existe en Firestore, cerrar sesión y mostrar error
+      if (!userDoc.exists()) {
         await auth.signOut();
         return Swal.fire({
           icon: "error",
@@ -74,6 +178,12 @@ function LoginPage() {
         });
       }
 
+      // Actualizar providers
+      await createOrUpdateUser(user, 'password');
+
+      // Crear sesión
+      await createSessionDocument(user.uid, user, 'password');
+
       Swal.fire({
         icon: "success",
         title: "¡Bienvenido!",
@@ -81,7 +191,7 @@ function LoginPage() {
         timer: 2000,
         showConfirmButton: false,
       });
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error en login: ", error);
 
@@ -102,50 +212,52 @@ function LoginPage() {
   const handleGoogleLogin = async () => {
     setLoading(true);
     const provider = new GoogleAuthProvider();
+    
+    provider.addScope('email');
+    provider.addScope('profile');
 
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      const exists = await checkUserExists(user.uid);
+      const googleData = user.providerData.find(p => p.providerId === 'google.com');
+      const userEmail = user.email || googleData?.email || `${user.uid}@google.user`;
+      const userName = user.displayName || googleData?.displayName || "Usuario de Google";
 
-      if (!exists) {
-        await auth.signOut();
+      console.log("\n🔵 ===== LOGIN CON GOOGLE =====");
+      console.log("UID de Firebase Auth:", user.uid);
+      console.log("Email:", userEmail);
+      console.log("Nombre:", userName);
 
-        return Swal.fire({
-          icon: "warning",
-          title: "Usuario no registrado",
-          html: `
-            <p>El usuario <strong>${user.email}</strong> no está registrado en el sistema.</p>
-            <p>Por favor, completa el formulario de registro para continuar.</p>
-          `,
-          confirmButtonText: "Ir a Registro",
-          confirmButtonColor: "#4F46E5",
-          showCancelButton: true,
-          cancelButtonText: "Cancelar",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate("/register", { 
-              state: { 
-                email: user.email,
-                uid: user.uid,
-                fromGoogle: true 
-              } 
-            });
-          }
-        });
+      const enhancedUser = {
+        uid: user.uid,
+        email: userEmail,
+        displayName: userName,
+        photoURL: user.photoURL || googleData?.photoURL || "",
+        emailVerified: user.emailVerified,
+        metadata: user.metadata,
+        providerData: user.providerData
+      };
+
+      // Crear/actualizar usando el UID correcto
+      const finalUserId = await createOrUpdateUser(enhancedUser, 'google');
+      
+      if (!finalUserId) {
+        throw new Error("No se pudo guardar el usuario");
       }
 
-      // Si existe, permitir el acceso
+      // Crear sesión con el UID correcto
+      await createSessionDocument(finalUserId, enhancedUser, 'google');
+
       Swal.fire({
         icon: "success",
-        title: `¡Bienvenido ${user.displayName}!`,
-        text: "Inicio de sesión exitoso",
+        title: `¡Bienvenido ${userName}!`,
+        text: "Inicio de sesión exitoso con Google",
         timer: 2000,
         showConfirmButton: false,
       });
 
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error en login con Google:", error);
 
@@ -158,17 +270,92 @@ function LoginPage() {
           showConfirmButton: false,
         });
       } else if (error.code === "auth/cancelled-popup-request") {
-        console.log("Popup cancelado - Se abrió otro popup");
-      } else if (
-        error.code === "auth/account-exists-with-different-credential"
-      ) {
-        Swal.fire(
-          "Error",
-          "Ya existe una cuenta con este correo usando otro método",
-          "error"
-        );
+        console.log("Popup cancelado");
+      } else if (error.code === "auth/account-exists-with-different-credential") {
+        Swal.fire({
+          icon: "warning",
+          title: "Cuenta existente",
+          text: "Ya existe una cuenta con este email. Usa el método de inicio de sesión original.",
+          confirmButtonColor: "#4F46E5",
+        });
       } else {
         Swal.fire("Error", "No se pudo iniciar sesión con Google", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGitHubLogin = async () => {
+    setLoading(true);
+    const provider = new GithubAuthProvider();
+    provider.addScope('user:email');
+    provider.addScope('read:user');
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const githubData = user.providerData.find(p => p.providerId === 'github.com');
+      const userEmail = user.email || githubData?.email || `${user.uid}@github.user`;
+      const userName = user.displayName || githubData?.displayName || "Usuario de GitHub";
+
+      console.log("\n⚫ ===== LOGIN CON GITHUB =====");
+      console.log("UID de Firebase Auth:", user.uid);
+      console.log("Email:", userEmail);
+      console.log("Nombre:", userName);
+
+      const enhancedUser = {
+        uid: user.uid,
+        email: userEmail,
+        displayName: userName,
+        photoURL: user.photoURL || githubData?.photoURL || "",
+        emailVerified: user.emailVerified,
+        metadata: user.metadata,
+        providerData: user.providerData
+      };
+
+      // Crear/actualizar usando el UID correcto
+      const finalUserId = await createOrUpdateUser(enhancedUser, 'github');
+      
+      if (!finalUserId) {
+        throw new Error("No se pudo guardar el usuario");
+      }
+
+      // Crear sesión con el UID correcto
+      await createSessionDocument(finalUserId, enhancedUser, 'github');
+
+      Swal.fire({
+        icon: "success",
+        title: `¡Bienvenido ${userName}!`,
+        text: "Inicio de sesión exitoso con GitHub",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error en login con GitHub:", error);
+
+      if (error.code === "auth/popup-closed-by-user") {
+        Swal.fire({
+          icon: "info",
+          title: "Cancelado",
+          text: "Cerraste la ventana de inicio de sesión",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } else if (error.code === "auth/cancelled-popup-request") {
+        console.log("Popup cancelado");
+      } else if (error.code === "auth/account-exists-with-different-credential") {
+        Swal.fire({
+          icon: "warning",
+          title: "Cuenta existente",
+          text: "Ya existe una cuenta con este email. Usa el método de inicio de sesión original.",
+          confirmButtonColor: "#4F46E5",
+        });
+      } else {
+        Swal.fire("Error", "No se pudo iniciar sesión con GitHub", "error");
       }
     } finally {
       setLoading(false);
@@ -293,6 +480,7 @@ function LoginPage() {
 
                   <button
                     type="button"
+                    onClick={handleGitHubLogin}
                     disabled={loading}
                     className="rounded-full bg-indigo-200 p-1.5 w-fit mr-2 cursor-pointer hover:bg-indigo-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
