@@ -167,109 +167,111 @@ function RegisterPage() {
   }
 
   return (
-    <div className="h-screen bg-indigo-950">
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-[100%] flex justify-center shadow-inner">
-          {/* Imagen lado izquierdo */}
-          <div className="w-[55%] flex justify-end shadow-inner">
-            <img
-              className="rounded-l-2xl w-full"
-              src="https://cubiko.co/wp-content/uploads/2023/01/course-9.jpg"
-              alt="Imagen de registro"
-            />
-          </div>
-
-          {/* Formulario lado derecho */}
-          <div className="w-[40%] bg-white rounded-r-2xl">
-            <div className="mt-6">
-              <h1 className="text-4xl font-bold text-center text-indigo-700">
-                Regístrate
-              </h1>
-              {fromGoogle && (
-                <p className="text-center text-sm text-gray-600 mt-2">
-                  Completa tus datos para continuar
-                </p>
-              )}
+    <div className="min-h-screen bg-indigo-950">
+      <div className="flex justify-center items-center min-h-screen py-8 px-4">
+        <div className="w-full max-w-6xl flex justify-center">
+          <div className="w-full flex flex-col lg:flex-row justify-center shadow-inner">
+            {/* Imagen lado izquierdo - oculta en móvil */}
+            <div className="hidden lg:flex lg:w-[55%] justify-end shadow-inner">
+              <img
+                className="rounded-l-2xl w-full object-cover"
+                src="https://cubiko.co/wp-content/uploads/2023/01/course-9.jpg"
+                alt="Imagen de registro"
+              />
             </div>
-            <form onSubmit={handleSubmit} className="w-[100%]">
-              <div className="flex justify-center">
-                <div className="w-[80%]">
-                  <input
-                    type="text"
-                    placeholder="Nombre"
-                    className="mt-10 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                    name="nombre"
-                    required
-                    value={formData.nombre}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Apellido"
-                    className="mt-6 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                    name="apellido"
-                    required
-                    value={formData.apellido}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    className="mt-6 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 disabled:opacity-60 disabled:cursor-not-allowed"
-                    name="correo"
-                    required
-                    value={formData.correo}
-                    onChange={handleChange}
-                    disabled={fromGoogle}
-                  />
 
-                  <div className="mt-6 relative w-full">
+            {/* Formulario lado derecho */}
+            <div className="w-full lg:w-[40%] bg-white rounded-2xl lg:rounded-l-none lg:rounded-r-2xl">
+              <div className="mt-6 px-4">
+                <h1 className="text-3xl md:text-4xl font-bold text-center text-indigo-700">
+                  Regístrate
+                </h1>
+                {fromGoogle && (
+                  <p className="text-center text-sm text-gray-600 mt-2">
+                    Completa tus datos para continuar
+                  </p>
+                )}
+              </div>
+              <form onSubmit={handleSubmit} className="w-full">
+                <div className="flex justify-center px-4">
+                  <div className="w-full max-w-md">
                     <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Contraseña"
-                      className="p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 pr-10"
-                      name="password"
+                      type="text"
+                      placeholder="Nombre"
+                      className="mt-10 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                      name="nombre"
                       required
-                      value={formData.password}
+                      value={formData.nombre}
                       onChange={handleChange}
                     />
-                    <button
-                      type="button"
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
+                    <input
+                      type="text"
+                      placeholder="Apellido"
+                      className="mt-6 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                      name="apellido"
+                      required
+                      value={formData.apellido}
+                      onChange={handleChange}
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      className="mt-6 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                      name="correo"
+                      required
+                      value={formData.correo}
+                      onChange={handleChange}
+                      disabled={fromGoogle}
+                    />
+
+                    <div className="mt-6 relative w-full">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Contraseña"
+                        className="p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 pr-10"
+                        name="password"
+                        required
+                        value={formData.password}
+                        onChange={handleChange}
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-900"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
+
+                    <input
+                      type="password"
+                      placeholder="Confirmar contraseña"
+                      className="mt-6 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                      name="repassword"
+                      required
+                      value={formData.repassword}
+                      onChange={handleChange}
+                    />
                   </div>
-
-                  <input
-                    type="password"
-                    placeholder="Confirmar contraseña"
-                    className="mt-6 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                    name="repassword"
-                    required
-                    value={formData.repassword}
-                    onChange={handleChange}
-                  />
                 </div>
-              </div>
 
-              <div className="flex justify-center items-center m-8">
-                <button type="submit" className="bg-indigo-800 px-6 py-3 rounded-xl font-bold text-white hover:bg-indigo-600 cursor-pointer">
-                  Crear cuenta
-                </button>
-              </div>
+                <div className="flex justify-center items-center m-8">
+                  <button type="submit" className="bg-indigo-800 px-6 py-3 rounded-xl font-bold text-white hover:bg-indigo-600 cursor-pointer">
+                    Crear cuenta
+                  </button>
+                </div>
 
-              <div className="flex justify-center mb-6">
-                <h1>¿Ya tienes cuenta?</h1>
-                <Link
-                  to="/login"
-                  className="ml-2 text-indigo-800 font-bold underline hover:text-indigo-600"
-                >
-                  Inicia sesión
-                </Link>
-              </div>
-            </form>
+                <div className="flex justify-center mb-6 px-4 text-sm md:text-base">
+                  <h1>¿Ya tienes cuenta?</h1>
+                  <Link
+                    to="/login"
+                    className="ml-2 text-indigo-800 font-bold underline hover:text-indigo-600"
+                  >
+                    Inicia sesión
+                  </Link>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

@@ -79,8 +79,8 @@ function StaffCRUD() {
   };
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen text-gray-100">
-      <h2 className="text-2xl font-bold mb-4 text-purple-400">CRUD Staff</h2>
+    <div className="p-4 md:p-6 bg-gray-900 min-h-screen text-gray-100">
+      <h2 className="text-xl md:text-2xl font-bold mb-4 text-purple-400">CRUD Staff</h2>
 
       {/* Formulario */}
       <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -108,48 +108,91 @@ function StaffCRUD() {
       </div>
       <button
         onClick={handleAddOrUpdate}
-        className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+        className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 w-full md:w-auto"
       >
         {editId ? "Actualizar Staff" : "Agregar Staff"}
       </button>
 
-      {/* Tabla */}
-      <table className="w-full mt-6 border-collapse">
-        <thead>
-          <tr className="bg-purple-700 text-left text-white">
-            <th className="p-2 border border-purple-500">ID</th>
-            <th className="p-2 border border-purple-500">Nombre</th>
-            <th className="p-2 border border-purple-500">Email</th>
-            <th className="p-2 border border-purple-500">Cargo</th>
-            <th className="p-2 border border-purple-500">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {staff.map((person) => (
-            <tr key={person.id} className="hover:bg-gray-800">
-              <td className="p-2 border border-purple-500">{person.id}</td>
-              <td className="p-2 border border-purple-500">{person.name}</td>
-              <td className="p-2 border border-purple-500">{person.email}</td>
-              <td className="p-2 border border-purple-500">{person.role}</td>
-              <td className="p-2 border border-purple-500 flex gap-2">
-                <button
-                  onClick={() => handleEdit(person)}
-                  className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(person.id)}
-                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Eliminar
-                </button>
-              </td>
+      {/* Tabla - Desktop */}
+      <div className="hidden md:block mt-6 overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-purple-700 text-left text-white">
+              <th className="p-2 border border-purple-500">ID</th>
+              <th className="p-2 border border-purple-500">Nombre</th>
+              <th className="p-2 border border-purple-500">Email</th>
+              <th className="p-2 border border-purple-500">Cargo</th>
+              <th className="p-2 border border-purple-500">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {staff.map((person) => (
+              <tr key={person.id} className="hover:bg-gray-800">
+                <td className="p-2 border border-purple-500">{person.id}</td>
+                <td className="p-2 border border-purple-500">{person.name}</td>
+                <td className="p-2 border border-purple-500">{person.email}</td>
+                <td className="p-2 border border-purple-500">{person.role}</td>
+                <td className="p-2 border border-purple-500">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(person)}
+                      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(person.id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Cards - Mobile */}
+      <div className="md:hidden mt-6 space-y-4">
+        {staff.map((person) => (
+          <div key={person.id} className="bg-gray-800 rounded-lg p-4 border border-purple-500">
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between items-start">
+                <span className="text-gray-400 text-sm">ID:</span>
+                <span className="text-white text-right break-all">{person.id}</span>
+              </div>
+              <div className="flex justify-between items-start">
+                <span className="text-gray-400 text-sm">Nombre:</span>
+                <span className="text-white font-semibold text-right">{person.name}</span>
+              </div>
+              <div className="flex justify-between items-start">
+                <span className="text-gray-400 text-sm">Email:</span>
+                <span className="text-white text-right break-all">{person.email}</span>
+              </div>
+              <div className="flex justify-between items-start">
+                <span className="text-gray-400 text-sm">Cargo:</span>
+                <span className="text-white text-right">{person.role}</span>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleEdit(person)}
+                className="flex-1 px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => handleDelete(person.id)}
+                className="flex-1 px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
-export default StaffCRUD;
+} export default StaffCRUD;
