@@ -18,6 +18,7 @@ function UsersPage() {
     nombre: "",
     apellido: "",
     correo: "",
+    displayName:""
   });
   const [editId, setEditId] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -190,7 +191,7 @@ function UsersPage() {
     setIsModalOpen(true); // Abrir el modal
   };
   return (
-    <div className="p-6 bg-gray-900 min-h-screen text-gray-100">
+    <div className="p-6  min-h-screen text-gray-100">
       <div className="bg-indigo-950 rounded-lg shadow-lg p-6 mb-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -212,7 +213,6 @@ function UsersPage() {
         <table className="w-full">
         <thead className="bg-purple-700 text-white">
           <tr className="text-left text-white">
-            <th className="p-2">ID</th>
             <th className="p-2">Nombre</th>
             <th className="p-2">Apellido</th>
             <th className="p-2">Email</th>
@@ -223,9 +223,8 @@ function UsersPage() {
         <tbody>
           {usuarios.map((person) => (
             <tr key={person.id} className="hover:bg-gray-800">
-              <td className="p-2">{person.id}</td>
               <td className="p-2 whitespace-nowrap">
-                {person.nombre}
+                {person.nombre || "Usuario"}
               </td>
               <td className="p-2 whitespace-nowrap">
                 {person.apellido}

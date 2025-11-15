@@ -1,5 +1,7 @@
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import { ProtectedRoute, RoleProtectedRoute, PublicRoute } from './components/ProtectedRoute'
 
 /* Páginas principales */
 import HomePage from './pages/HomePage'
@@ -8,10 +10,10 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import ForgotPassword from './pages/ForgotPassword'
 import ChangePassword from './pages/ChangePasswordPage'
+import SessionsTable from './components/SessionsTable'
 
 /* CRUD */
 import Users from './components/UsersPage'
-import Products from './components/ProductsPage'
 import Staff from './components/StaffPage'
 
 /* Playground hooks */
@@ -39,43 +41,241 @@ import HookUseActionState from './playground/HookUseActionState'
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Rutas públicas */}
-        <Route path='/' element={<HomePage />} />
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/register' element={<RegisterPage />} />
-        <Route path='/forgotpassword' element={<ForgotPassword />} />
-        <Route path='/changepassword' element={<ChangePassword />} />
+      <AuthProvider>
+        <Routes>
+          {/* Rutas públicas */}
+          <Route path='/' element={<HomePage />} />
+          
+          {/* Rutas de autenticación - redirigen al dashboard si ya está autenticado */}
+          <Route 
+            path='/login' 
+            element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path='/register' 
+            element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path='/forgotpassword' 
+            element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            } 
+          />
 
-        {/* Dashboard con rutas hijas */}
-        <Route path='/dashboard/*' element={<DashboardPage />}>
-          <Route path='users' element={<Users />} />
-          <Route path='products' element={<Products />} />
-          <Route path='staff' element={<Staff />} />
-        </Route>
+          <Route 
+            path='/changepassword' 
+            element={
+                <ChangePassword />
+            } 
+          />
 
-        {/* Playground de hooks */}
-        <Route path='/hooks' element={<HomeHooks />} />
-        <Route path='/useState' element={<HookUseState />} />
-        <Route path='/useNavigate' element={<HookUseNavigate />} />
-        <Route path='/useDebugValue' element={<HookUseDebugValue />} />
-        <Route path='/useReducer' element={<HookUseReducer />} />
-        <Route path='/useRef' element={<HookUseRef />} />
-        <Route path='/ImperativeHandle' element={<HookImperativeHandle />} />
-        <Route path='/useMemo' element={<HookUseMemo />} />
-        <Route path='/useCallback' element={<HookUseCallback />} />
-        <Route path='/useTransition' element={<HookUseTransition />} />
-        <Route path='/useId' element={<HookUseId />} />
-        <Route path='/useEffect' element={<HookUseEffect />} />
-        <Route path='/useLayoutEffect' element={<HookUseLayoutEffect />} />
-        <Route path='/useInsersationEffect' element={<HookUseInsersationEffect />} />
-        <Route path='/useContext' element={<HookUseContext />} />
-        <Route path='/useSyncExternalStore' element={<HookUseSyncExternalStore />} />
-        <Route path='/use' element={<HookUse />} />
-        <Route path='/useOptimistic' element={<HookUseOptimistic />} />
-        <Route path='/useFormStatus' element={<HookUseFormStatus />} />
-        <Route path='/useActionState' element={<HookUseActionState />} />
-      </Routes>
+          <Route 
+            path='/dashboard/*' 
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          >
+            <Route 
+              path='users' 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
+                  <Users />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path='staff' 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
+                  <Staff />
+                </RoleProtectedRoute>
+              } 
+            />
+          </Route>
+
+          <Route 
+            path='/sessions' 
+            element={
+              <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
+                <SessionsTable />
+              </RoleProtectedRoute>
+            }
+          />
+
+          <Route 
+            path='/hooks' 
+            element={
+              <ProtectedRoute>
+                <HomeHooks />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useState' 
+            element={
+              <ProtectedRoute>
+                <HookUseState />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useNavigate' 
+            element={
+              <ProtectedRoute>
+                <HookUseNavigate />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useDebugValue' 
+            element={
+              <ProtectedRoute>
+                <HookUseDebugValue />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useReducer' 
+            element={
+              <ProtectedRoute>
+                <HookUseReducer />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useRef' 
+            element={
+              <ProtectedRoute>
+                <HookUseRef />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/ImperativeHandle' 
+            element={
+              <ProtectedRoute>
+                <HookImperativeHandle />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useMemo' 
+            element={
+              <ProtectedRoute>
+                <HookUseMemo />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useCallback' 
+            element={
+              <ProtectedRoute>
+                <HookUseCallback />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useTransition' 
+            element={
+              <ProtectedRoute>
+                <HookUseTransition />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useId' 
+            element={
+              <ProtectedRoute>
+                <HookUseId />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useEffect' 
+            element={
+              <ProtectedRoute>
+                <HookUseEffect />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useLayoutEffect' 
+            element={
+              <ProtectedRoute>
+                <HookUseLayoutEffect />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useInsersationEffect' 
+            element={
+              <ProtectedRoute>
+                <HookUseInsersationEffect />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useContext' 
+            element={
+              <ProtectedRoute>
+                <HookUseContext />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useSyncExternalStore' 
+            element={
+              <ProtectedRoute>
+                <HookUseSyncExternalStore />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/use' 
+            element={
+              <ProtectedRoute>
+                <HookUse />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useOptimistic' 
+            element={
+              <ProtectedRoute>
+                <HookUseOptimistic />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useFormStatus' 
+            element={
+              <ProtectedRoute>
+                <HookUseFormStatus />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/useActionState' 
+            element={
+              <ProtectedRoute>
+                <HookUseActionState />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

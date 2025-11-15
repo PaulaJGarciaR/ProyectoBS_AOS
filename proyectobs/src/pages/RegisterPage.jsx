@@ -1,19 +1,46 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore"
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { auth, db } from "../firebase";
 import Swal from "sweetalert2";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function RegisterPage() {
-
   const navigate = useNavigate();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
 
+  // Obtener datos de Google si vienen del login
+  const emailFromGoogle = location.state?.email || "";
+  const fromGoogle = location.state?.fromGoogle || false;
+  const googleUid = location.state?.uid || null;
+
   const [formData, setFormData] = useState({
-    nombre: "", apellido: "", correo: "", password: "", repassword: "" 
+    nombre: "", 
+    apellido: "", 
+    correo: emailFromGoogle, 
+    password: "", 
+    repassword: "" 
   });
+
+  // Actualizar el email si viene de Google
+  useEffect(() => {
+    if (emailFromGoogle) {
+      setFormData(prev => ({
+        ...prev,
+        correo: emailFromGoogle
+      }));
+
+      // Mostrar mensaje informativo
+      Swal.fire({
+        icon: "info",
+        title: "Completa tu registro",
+        text: `Por favor completa tus datos para registrar la cuenta ${emailFromGoogle}`,
+        confirmButtonColor: "#4F46E5",
+      });
+    }
+  }, [emailFromGoogle]);
 
   const handleChange = (e) => {
     setFormData({
@@ -41,27 +68,100 @@ function RegisterPage() {
     if(password !== repassword){
       return Swal.fire("Las contraseñas no son iguales");
     }
+    
     try {
-      const emailLower = correo.toLocaleLowerCase();
+      const emailLower = correo.toLowerCase();
+      let user;
 
-      // Crea usuario para el servicio de autenticación de firebase
-      const userMethod = await createUserWithEmailAndPassword(auth, emailLower, password);
-      const user = userMethod.user;
+      // Si viene de Google, el usuario ya existe en Auth
+      if (fromGoogle && googleUid) {
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, emailLower, password);
+          user = userCredential.user;
+        } catch (signInError) {
+          user = { uid: googleUid };
+          console.log(signInError)
+        }
+      } else {
+        // Registro normal: crear usuario en Firebase Auth
+        const userMethod = await createUserWithEmailAndPassword(auth, emailLower, password);
+        user = userMethod.user;
+      }
+
+      // Verificar si ya existe en Firestore
+      const userDocRef = doc(db, "usuarios", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        return Swal.fire({
+          icon: "info",
+          title: "Usuario ya registrado",
+          text: "Este usuario ya está completamente registrado. Puedes iniciar sesión.",
+          confirmButtonColor: "#4F46E5",
+        }).then(() => {
+          navigate("/login");
+        });
+      }
 
       // Guardar datos en firestore
-      await setDoc (doc(db, "usuarios", user.uid), {
+      await setDoc(userDocRef, {
         uid: user.uid,
-        nombre, apellido, correo: emailLower, password, repassword, estado: "pendiente", rol: "visitante", creado: new Date(), metodo: "password" 
-
+        nombre, 
+        apellido, 
+        correo: emailLower, 
+        estado: "activo", 
+        rol: "visitante", 
+        creado: new Date(), 
+        metodo: fromGoogle ? "google" : "password" 
       });
 
-      Swal.fire("Registrado", "Usuario creado con exito", "success");
-      navigate("/login")
+      Swal.fire({
+        icon: "success",
+        title: "¡Registrado!",
+        text: "Usuario creado con éxito. Ahora puedes iniciar sesión.",
+        confirmButtonColor: "#4F46E5",
+      });
+      
+      navigate("/login");
     } catch (error){
         console.error("Error de registro: ", error);
 
         if(error.code === "auth/email-already-in-use"){
-          Swal.fire("Correo en uso", "Debe ingresar otro correo", "error");
+          Swal.fire({
+            icon: "warning",
+            title: "Correo ya registrado",
+            html: `
+              <p>Este correo ya tiene una cuenta en Firebase Authentication.</p>
+              <p><strong>¿Qué hacer?</strong></p>
+              <ul style="text-align: left; margin: 10px 40px;">
+                <li>Si te registraste con Google, intenta iniciar sesión con Google</li>
+                <li>Si olvidaste tu contraseña, usa "¿Olvidaste tu contraseña?"</li>
+                <li>Si el problema persiste, contacta soporte</li>
+              </ul>
+            `,
+            confirmButtonText: "Ir a Login",
+            confirmButtonColor: "#4F46E5",
+            showCancelButton: true,
+            cancelButtonText: "Cancelar"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              navigate("/login");
+            }
+          });
+        } else if (error.code === "auth/weak-password") {
+          Swal.fire({
+            icon: "error",
+            title: "Contraseña débil",
+            text: "La contraseña debe tener al menos 6 caracteres.",
+            confirmButtonColor: "#4F46E5",
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se pudo completar el registro. Intenta nuevamente.",
+            confirmButtonColor: "#4F46E5",
+          });
         }
     }
   }
@@ -85,8 +185,13 @@ function RegisterPage() {
               <h1 className="text-4xl font-bold text-center text-indigo-700">
                 Regístrate
               </h1>
+              {fromGoogle && (
+                <p className="text-center text-sm text-gray-600 mt-2">
+                  Completa tus datos para continuar
+                </p>
+              )}
             </div>
-            <form onSubmit={handleSubmit} className="w-[100%]" action="">
+            <form onSubmit={handleSubmit} className="w-[100%]">
               <div className="flex justify-center">
                 <div className="w-[80%]">
                   <input
@@ -110,11 +215,12 @@ function RegisterPage() {
                   <input
                     type="email"
                     placeholder="Email"
-                    className="mt-6 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    className="mt-6 p-3 w-full rounded-lg bg-[#D6DEE3]/40 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 disabled:opacity-60 disabled:cursor-not-allowed"
                     name="correo"
                     required
                     value={formData.correo}
                     onChange={handleChange}
+                    disabled={fromGoogle}
                   />
 
                   <div className="mt-6 relative w-full">
@@ -136,7 +242,6 @@ function RegisterPage() {
                     </button>
                   </div>
 
-
                   <input
                     type="password"
                     placeholder="Confirmar contraseña"
@@ -157,12 +262,12 @@ function RegisterPage() {
 
               <div className="flex justify-center mb-6">
                 <h1>¿Ya tienes cuenta?</h1>
-                <a
-                  href="/login"
-                  className="ml-2 text-indigo-800 font-bold underline"
+                <Link
+                  to="/login"
+                  className="ml-2 text-indigo-800 font-bold underline hover:text-indigo-600"
                 >
                   Inicia sesión
-                </a>
+                </Link>
               </div>
             </form>
           </div>
