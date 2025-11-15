@@ -113,56 +113,61 @@ export default function SessionsTable() {
   }
 
   return (
-    <div className="bg-indigo-950 rounded-2xl shadow-xl p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+    <div className="bg-indigo-950 rounded-2xl shadow-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
           Historial de Sesiones
         </h2>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center w-full sm:w-auto">
           <button
             onClick={fetchSessions}
-            className="bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+            className="bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
             title="Recargar sesiones"
           >
             <RefreshCw className="w-4 h-4" />
-            Recargar
+            <span className="sm:inline">Recargar</span>
           </button>
-      
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Tabla - Desktop */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-indigo-800">
               <th className="pb-3 text-purple-400 font-semibold">
                 <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
                   Usuario
                 </div>
               </th>
               <th className="pb-3 text-purple-400 font-semibold">
                 <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
                   Correo
                 </div>
               </th>
               <th className="pb-3 text-purple-400 font-semibold">
                 <div className="flex items-center gap-2">
+                  <LogIn className="w-4 h-4" />
                   Método
                 </div>
               </th>
               <th className="pb-3 text-purple-400 font-semibold">
                 <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
                   Fecha
                 </div>
               </th>
               <th className="pb-3 text-purple-400 font-semibold">
                 <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
                   Hora Entrada
                 </div>
               </th>
               <th className="pb-3 text-purple-400 font-semibold">
                 <div className="flex items-center gap-2">
-
+                  <LogOut className="w-4 h-4" />
                   Hora Salida
                 </div>
               </th>
@@ -203,6 +208,7 @@ export default function SessionsTable() {
                       <span className="text-white">{formatTime(session.logoutTime)}</span>
                     ) : (
                       <span className="text-green-400 flex items-center gap-1">
+                        <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                         Activa
                       </span>
                     )}
@@ -212,6 +218,92 @@ export default function SessionsTable() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Cards - Mobile & Tablet */}
+      <div className="lg:hidden space-y-4">
+        {filteredSessions.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            No hay sesiones registradas
+          </div>
+        ) : (
+          filteredSessions.map((session) => (
+            <div key={session.id} className="bg-indigo-900/30 rounded-lg p-4 border border-indigo-800">
+              <div className="space-y-3">
+                {/* Usuario */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <User className="w-4 h-4" />
+                    <span>Usuario</span>
+                  </div>
+                  <span className="text-white font-semibold text-right">
+                    {session.displayName || "Usuario"}
+                  </span>
+                </div>
+
+                {/* Email */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <Mail className="w-4 h-4" />
+                    <span>Correo</span>
+                  </div>
+                  <span className="text-indigo-200 text-right break-all text-sm">
+                    {session.email || "N/A"}
+                  </span>
+                </div>
+
+                {/* Método */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <LogIn className="w-4 h-4" />
+                    <span>Método</span>
+                  </div>
+                  {getProviderBadge(session.provider)}
+                </div>
+
+                {/* Fecha */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <Calendar className="w-4 h-4" />
+                    <span>Fecha</span>
+                  </div>
+                  <span className="text-indigo-200 text-right">
+                    {formatDate(session.timestamp)}
+                  </span>
+                </div>
+
+                {/* Hora Entrada */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <Clock className="w-4 h-4" />
+                    <span>Hora Entrada</span>
+                  </div>
+                  <span className="text-white font-medium text-right">
+                    {formatTime(session.loginTime)}
+                  </span>
+                </div>
+
+                {/* Hora Salida */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-purple-400 text-sm">
+                    <LogOut className="w-4 h-4" />
+                    <span>Hora Salida</span>
+                  </div>
+                  {session.logoutTime ? (
+                    <span className="text-white font-medium text-right">
+                      {formatTime(session.logoutTime)}
+                    </span>
+                  ) : (
+                    <span className="text-green-400 flex items-center gap-1">
+                      <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                      Activa
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <div className="mt-4 text-sm text-indigo-300">

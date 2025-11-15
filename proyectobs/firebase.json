@@ -6,10 +6,31 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "only": [
+      "hosting"
+    ],
     "rewrites": [
+      {
+        "source": "/privacy",
+        "destination": "/privacy.html"
+      },
       {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "staticFiles": {
+      "directory": "public"
+    },
+    "headers": [
+      {
+        "source": "/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-store"
+          }
+        ]
       }
     ]
   }

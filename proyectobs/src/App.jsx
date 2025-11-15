@@ -9,7 +9,6 @@ import DashboardPage from './pages/DashboardPage'
 import ForgotPassword from './pages/ForgotPassword'
 import ChangePassword from './pages/ChangePasswordPage'
 import SessionsTable from './components/SessionsTable'
-
 /* CRUD */
 import Users from './components/UsersPage'
 import Staff from './components/StaffPage'

@@ -191,79 +191,123 @@ function UsersPage() {
     setIsModalOpen(true); // Abrir el modal
   };
   return (
-    <div className="p-6  min-h-screen text-gray-100">
-      <div className="bg-indigo-950 rounded-lg shadow-lg p-6 mb-6">
-        <div className="flex justify-between items-center">
+    <div className="p-4 md:p-6 min-h-screen text-gray-100">
+      <div className="bg-indigo-950 rounded-lg shadow-lg p-4 md:p-6 mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">
               Gestión de Usuarios
             </h1>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700 cursor-pointer font-semibold text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
+            className="bg-purple-600 hover:bg-purple-700 cursor-pointer font-semibold text-white px-4 py-2 rounded-lg flex items-center gap-2 transition w-full sm:w-auto justify-center"
           >
             Nuevo Usuario
           </button>
         </div>
       </div>
 
-      {/* Tabla */}
-      <div className="bg-indigo-950 shadow-lg overflow-hidden rounded-lg">
-        <table className="w-full">
-        <thead className="bg-purple-700 text-white">
-          <tr className="text-left text-white">
-            <th className="p-2">Nombre</th>
-            <th className="p-2">Apellido</th>
-            <th className="p-2">Email</th>
-            <th className="p-2">Rol</th>
-            <th className="p-2">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.map((person) => (
-            <tr key={person.id} className="hover:bg-gray-800">
-              <td className="p-2 whitespace-nowrap">
-                {person.nombre || "Usuario"}
-              </td>
-              <td className="p-2 whitespace-nowrap">
-                {person.apellido}
-              </td>
-              <td className="p-2">{person.correo}</td>
-              <td className="p-2">{person.rol}</td>
-              <td className="p-2 flex gap-2">
-                <button
-                  onClick={() => handleEdit(person)}
-                  className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(person.id)}
-                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
+      {/* Tabla - Desktop */}
+      <div className="hidden md:block bg-indigo-950 shadow-lg overflow-hidden rounded-lg">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-purple-700 text-white">
+              <tr className="text-left text-white">
+                <th className="p-2">Nombre</th>
+                <th className="p-2">Apellido</th>
+                <th className="p-2">Email</th>
+                <th className="p-2">Rol</th>
+                <th className="p-2">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usuarios.map((person) => (
+                <tr key={person.id} className="hover:bg-gray-800">
+                  <td className="p-2 whitespace-nowrap">
+                    {person.nombre || "Usuario"}
+                  </td>
+                  <td className="p-2 whitespace-nowrap">
+                    {person.apellido}
+                  </td>
+                  <td className="p-2">{person.correo}</td>
+                  <td className="p-2">{person.rol}</td>
+                  <td className="p-2 flex gap-2">
+                    <button
+                      onClick={() => handleEdit(person)}
+                      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(person.id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      
 
-      {/* Modal Simple */}
+      {/* Cards - Mobile */}
+      <div className="md:hidden space-y-4">
+        {usuarios.map((person) => (
+          <div key={person.id} className="bg-indigo-950 rounded-lg p-4 shadow-lg">
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between items-start">
+                <span className="text-gray-400 text-sm">Nombre:</span>
+                <span className="text-white font-semibold text-right">
+                  {person.nombre || "Usuario"}
+                </span>
+              </div>
+              <div className="flex justify-between items-start">
+                <span className="text-gray-400 text-sm">Apellido:</span>
+                <span className="text-white text-right">{person.apellido}</span>
+              </div>
+              <div className="flex justify-between items-start">
+                <span className="text-gray-400 text-sm">Email:</span>
+                <span className="text-white text-right break-all">{person.correo}</span>
+              </div>
+              <div className="flex justify-between items-start">
+                <span className="text-gray-400 text-sm">Rol:</span>
+                <span className="text-white">{person.rol}</span>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleEdit(person)}
+                className="flex-1 px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => handleDelete(person.id)}
+                className="flex-1 px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-white/20 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-indigo-950 rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold text-white mb-4">Nuevo Usuario</h2>
+        <div className="fixed inset-0 bg-white/20 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-indigo-950 rounded-lg p-4 md:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold text-white mb-4">
+              {editId ? "Editar Usuario" : "Nuevo Usuario"}
+            </h2>
 
             <div className="mb-6 flex flex-col justify-center">
               <input
                 type="text"
                 placeholder="Nombre"
-                className="p-3 w-full rounded-lg bg-[#D6DEE3]/20 text-gray-900 placeholder-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-300 pr-10"
+                className="p-3 w-full rounded-lg bg-[#D6DEE3]/20 text-gray-900 placeholder-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 value={formData.nombre}
                 onChange={(e) =>
                   setFormData({ ...formData, nombre: e.target.value })
@@ -273,7 +317,7 @@ function UsersPage() {
               <input
                 type="text"
                 placeholder="Apellido"
-                className="p-3 mt-4 w-full rounded-lg bg-[#D6DEE3]/20 text-gray-900 placeholder-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-300 pr-10"
+                className="p-3 mt-4 w-full rounded-lg bg-[#D6DEE3]/20 text-gray-900 placeholder-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 value={formData.apellido}
                 onChange={(e) =>
                   setFormData({ ...formData, apellido: e.target.value })
@@ -283,14 +327,14 @@ function UsersPage() {
               <input
                 type="email"
                 placeholder="Email"
-                className="p-3 mt-4 w-full rounded-lg bg-[#D6DEE3]/20 text-gray-900 placeholder-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-300 pr-10"
+                className="p-3 mt-4 w-full rounded-lg bg-[#D6DEE3]/20 text-gray-900 placeholder-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 value={formData.correo}
                 onChange={(e) =>
                   setFormData({ ...formData, correo: e.target.value })
                 }
               />
 
-              <div className="mt-6 relative w-full">
+              <div className="mt-4 relative w-full">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Contraseña"
@@ -311,7 +355,7 @@ function UsersPage() {
                 </button>
               </div>
 
-                <div className="mt-6 relative w-full">
+              <div className="mt-4 relative w-full">
                 <input
                   type={showRePassword ? "text" : "password"}
                   placeholder="Confirmar Contraseña"
@@ -331,21 +375,19 @@ function UsersPage() {
                   {showRePassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
-              
-              
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col sm:flex-row justify-center gap-2">
               <button
                 onClick={handleAddOrUpdate}
-                className="bg-purple-600 text-white px-4 py-2 mr-2  hover:bg-purple-700 rounded-lg"
+                className="bg-purple-600 text-white px-4 py-2 hover:bg-purple-700 rounded-lg w-full sm:w-auto"
               >
                 {editId ? "Actualizar" : "Agregar"}
               </button>
 
               <button
                 onClick={() => closeModal()}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition"
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition w-full sm:w-auto"
               >
                 Cerrar
               </button>

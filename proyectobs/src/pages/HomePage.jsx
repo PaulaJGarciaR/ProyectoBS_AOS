@@ -2,16 +2,30 @@ import React from "react";
 
 function HomePage() {
   return (
-    <div className="flex justify-center items-center h-screen bg-indigo-950">
-      <div className="w-[50%] bg-indigo-900  shadow rounded">
-        <h1 className="text-center my-6 text-3xl font-bold text-white">HomePage</h1>
-        <div className="flex justify-center pb-4">
-          <a href="/login" className="mr-4 bg-indigo-950 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-800 text-white">Login</a>
-          <a href="/register" className="mr-4 bg-indigo-950 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-800 text-white">Register</a>
-          <a href="/hooks" className="bg-indigo-950 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-800 text-white">Hooks</a>
-          {/* <a href="/dashboard" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Dashboard</a>
-          <a href="/changepassword" className="bg-indigo-400 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-indigo-500">Change Password</a> */}
-
+    <div className="flex justify-center items-center min-h-screen bg-indigo-950 px-4">
+      <div className="w-full max-w-md sm:max-w-lg bg-indigo-900 shadow-lg rounded-xl p-6 sm:p-8">
+        <h1 className="text-center text-3xl sm:text-4xl font-bold text-white mb-6">
+          HomePage
+        </h1>
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <a
+            href="/login"
+            className="w-full sm:w-auto bg-indigo-950 px-4 py-2 rounded-xl font-bold text-white hover:bg-indigo-800 text-center"
+          >
+            Login
+          </a>
+          <a
+            href="/register"
+            className="w-full sm:w-auto bg-indigo-950 px-4 py-2 rounded-xl font-bold text-white hover:bg-indigo-800 text-center"
+          >
+            Register
+          </a>
+          <a
+            href="/hooks"
+            className="w-full sm:w-auto bg-indigo-950 px-4 py-2 rounded-xl font-bold text-white hover:bg-indigo-800 text-center"
+          >
+            Hooks
+          </a>
         </div>
       </div>
     </div>
