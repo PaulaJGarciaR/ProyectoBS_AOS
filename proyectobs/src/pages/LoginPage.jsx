@@ -11,6 +11,7 @@ import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import Swal from "sweetalert2";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FacebookAuthProvider } from "firebase/auth"
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -362,6 +363,43 @@ function LoginPage() {
     }
   };
 
+  const handleFacebookLogin = async () => {
+    setLoading(true);
+    const provider = new FacebookAuthProvider();
+  
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+  
+      const userEmail = user.email || `${user.uid}@facebook.user`;
+
+  
+      const enhancedUser = {
+        uid: user.uid,
+        email: userEmail,
+        displayName: user.displayName || "Usuario de Facebook",
+        photoURL: user.photoURL || "",
+      };
+  
+      const finalUserId = await createOrUpdateUser(enhancedUser, "facebook");
+      await createSessionDocument(finalUserId, enhancedUser, "facebook");
+  
+      Swal.fire({
+        icon: "success",
+        title: "¡Bienvenido!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+  
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "No se pudo iniciar con Facebook", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="h-screen bg-indigo-950">
       <div className="flex justify-center items-center h-screen">
@@ -427,6 +465,14 @@ function LoginPage() {
                   to="/forgotpassword"
                 >
                   ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
+              <div className="flex justify-end mt-4 mr-12">
+                <Link
+                  className="font-semibold text-indigo-800 hover:text-indigo-600"
+                  to="/changepassword"
+                >
+                  Cambiar contraseña
                 </Link>
               </div>
 
@@ -498,6 +544,7 @@ function LoginPage() {
 
                   <button
                     type="button"
+                    onClick={handleFacebookLogin}   
                     disabled={loading}
                     className="rounded-full bg-indigo-200 p-1.5 w-fit mr-2 cursor-pointer hover:bg-indigo-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
