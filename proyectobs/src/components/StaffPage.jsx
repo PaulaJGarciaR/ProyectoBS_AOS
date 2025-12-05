@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 import { db } from "../firebase"; // tu config de Firebase
 import {
@@ -78,9 +81,162 @@ function StaffCRUD() {
     setEditId(person.id);
   };
 
+  // Función para exportar a PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    // Configurar fuente y colores
+    doc.setFontSize(18);
+    doc.setTextColor(40, 40, 40);
+    const primaryColor = [79, 70, 229];
+
+    // Encabezado del reporte
+    doc.setFontSize(20);
+    doc.setTextColor(...primaryColor);
+    doc.setFont("helvetica", "bold");
+    doc.text("Reporte de Staff", doc.internal.pageSize.getWidth() / 2, 20, {
+      align: "center",
+    });
+
+    // Fecha de generación
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    const fechaActual = new Date().toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    doc.text(`Fecha: ${fechaActual}`, 14, 28);
+
+    doc.setDrawColor(124, 58, 237);
+    doc.setLineWidth(0.5);
+    doc.line(14, 32, 196, 32);
+
+    // Preparar datos para la tabla
+    const tableData = staff.map((person) => [
+      person.name || "Sin nombre",
+      person.email || "N/A",
+      person.role || "Sin cargo",
+    ]);
+
+    // Generar tabla usando autoTable importado
+    autoTable(doc, {
+      startY: 38,
+      head: [["Nombre", "Email", "Cargo"]],
+      body: tableData,
+      theme: "striped",
+      headStyles: {
+        fillColor: primaryColor,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        fontSize: 9,
+        halign: "center",
+      },
+      bodyStyles: {
+        fontSize: 8,
+        textColor: [50, 50, 50],
+      },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250],
+      },
+      margin: { top: 10, left: 14, right: 14 },
+      styles: {
+        overflow: "linebreak",
+        cellPadding: 3,
+      },
+    });
+
+    // Pie de página con número de registros
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.setTextColor(150);
+      doc.text(
+        `Total de staff: ${staff.length} | Página ${i} de ${pageCount}`,
+        14,
+        doc.internal.pageSize.height - 10
+      );
+    }
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const fileName = `Reporte_Staff_${year}-${month}-${day}.pdf`;
+    doc.save(fileName);
+
+    Swal.fire({
+      icon: "success",
+      title: "PDF Generado",
+      text: "El archivo PDF se ha descargado correctamente",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  };
+
+  // Función para exportar a Excel
+  const exportToExcel = () => {
+    // Preparar datos para Excel
+    const excelData = staff.map((person) => ({
+      Nombre: person.name || "Sin nombre",
+      Email: person.email || "N/A",
+      Cargo: person.role || "Sin cargo",
+    }));
+
+    // Crear libro de trabajo
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+
+    // Ajustar ancho de columnas
+    const columnWidths = [
+      { wch: 20 }, // Nombre
+      { wch: 30 }, // Email
+      { wch: 20 }, // Cargo
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Staff");
+
+    // Descargar el archivo
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    XLSX.writeFile(workbook, `Reporte_Staff_${year}-${month}-${day}.xlsx`);
+
+    Swal.fire({
+      icon: "success",
+      title: "Excel Generado",
+      text: "El archivo Excel se ha descargado correctamente",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  };
+
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-gray-100">
-      <h2 className="text-2xl font-bold mb-4 text-purple-400">CRUD Staff</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-purple-400">CRUD Staff</h2>
+        <div className="flex gap-2">
+          <button
+            onClick={exportToPDF}
+            className="bg-red-600 hover:bg-red-700 cursor-pointer font-semibold text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
+            title="Exportar a PDF"
+          >
+            <span className="hidden sm:inline">Exportar PDF</span>
+          </button>
+          <button
+            onClick={exportToExcel}
+            className="bg-green-600 hover:bg-green-700 cursor-pointer font-semibold text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
+            title="Exportar a Excel"
+          >
+            <span className="hidden sm:inline">Exportar Excel</span>
+          </button>
+        </div>
+      </div>
 
       {/* Formulario */}
       <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -134,13 +290,13 @@ function StaffCRUD() {
               <td className="p-2 border border-purple-500 flex gap-2">
                 <button
                   onClick={() => handleEdit(person)}
-                  className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                  className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
                 >
                   Editar
                 </button>
                 <button
                   onClick={() => handleDelete(person.id)}
-                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                  className="px-3 py-1 bg-purple-800 text-white rounded hover:bg-purple-900"
                 >
                   Eliminar
                 </button>

@@ -4,6 +4,7 @@ import { db } from "../firebase";
 import { Clock, Mail, User, LogIn, LogOut, Calendar, RefreshCw, Search, Timer, FileDown } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 
 export default function SessionsTable() {
   const [sessions, setSessions] = useState([]);
@@ -26,12 +27,12 @@ export default function SessionsTable() {
       const sessionsData = await Promise.all(
         querySnapshot.docs.map(async (docSnap) => {
           const sessionData = docSnap.data();
-          
+
           if (sessionData.provider === "password" && sessionData.userId) {
             try {
               const userRef = doc(db, "usuarios", sessionData.userId);
               const userDoc = await getDoc(userRef);
-              
+
               if (userDoc.exists()) {
                 const userData = userDoc.data();
                 return {
@@ -45,7 +46,7 @@ export default function SessionsTable() {
               console.error("Error al obtener datos del usuario:", error);
             }
           }
-          
+
           return {
             id: docSnap.id,
             ...sessionData,
@@ -84,18 +85,18 @@ export default function SessionsTable() {
 
   const calculateDuration = (loginTime, logoutTime) => {
     if (!loginTime) return "N/A";
-    
+
     const start = new Date(loginTime);
     const end = logoutTime ? new Date(logoutTime) : new Date();
-    
+
     const diffMs = end - start;
-    
+
     if (diffMs < 0) return "N/A";
-    
+
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m ${seconds}s`;
     } else if (minutes > 0) {
@@ -115,9 +116,8 @@ export default function SessionsTable() {
 
     return (
       <span
-        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-          badges[provider] || "bg-gray-100 text-gray-800"
-        }`}
+        className={`px-3 py-1 rounded-full text-xs font-semibold ${badges[provider] || "bg-gray-100 text-gray-800"
+          }`}
       >
         {provider?.charAt(0).toUpperCase() + provider?.slice(1) || "Desconocido"}
       </span>
@@ -127,18 +127,18 @@ export default function SessionsTable() {
   // Función para exportar a PDF
   const exportToPDF = () => {
     setExporting(true);
-    
+
     try {
       const doc = new jsPDF({
         orientation: "landscape",
         unit: "mm",
         format: "a4"
       });
-      
+
       // Configuración de colores
       const primaryColor = [79, 70, 229]; // Indigo
       const secondaryColor = [99, 102, 241];
-      
+
       // Encabezado del PDF
       const currentDate = new Date().toLocaleDateString("es-ES", {
         day: "2-digit",
@@ -147,19 +147,19 @@ export default function SessionsTable() {
         hour: "2-digit",
         minute: "2-digit"
       });
-      
+
       // Título principal
       doc.setFontSize(20);
       doc.setTextColor(...primaryColor);
       doc.setFont("helvetica", "bold");
       doc.text("Reporte de Historial de Sesiones", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
-      
+
       // Fecha de generación
       doc.setFontSize(10);
       doc.setTextColor(100, 100, 100);
       doc.setFont("helvetica", "normal");
       doc.text(`Fecha de generación: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 28, { align: "center" });
-      
+
       // Información adicional
       doc.setFontSize(9);
       doc.text(`Total de sesiones: ${filteredSessions.length}`, 14, 38);
@@ -169,7 +169,7 @@ export default function SessionsTable() {
       if (searchTerm) {
         doc.text(`Búsqueda: "${searchTerm}"`, 14, filter !== "all" ? 48 : 43);
       }
-      
+
       // Preparar datos para la tabla
       const tableData = filteredSessions.map((session) => [
         session.displayName || "Usuario",
@@ -178,11 +178,11 @@ export default function SessionsTable() {
         formatDate(session.timestamp),
         formatTime(session.loginTime),
         session.logoutTime ? formatTime(session.logoutTime) : "Activa",
-        session.logoutTime 
+        session.logoutTime
           ? calculateDuration(session.loginTime, session.logoutTime)
           : calculateDuration(session.loginTime, null) + " (activa)"
       ]);
-      
+
       // Configuración de la tabla
       autoTable(doc, {
         startY: filter !== "all" || searchTerm ? 53 : 48,
@@ -218,12 +218,12 @@ export default function SessionsTable() {
           cellPadding: 3
         }
       });
-      
+
       // Pie de página
       const pageCount = doc.internal.getNumberOfPages();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
-      
+
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
         doc.setFontSize(8);
@@ -235,15 +235,15 @@ export default function SessionsTable() {
           { align: "center" }
         );
       }
-      
+
       // Guardar el PDF
-     const today = new Date();
+      const today = new Date();
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, '0');
       const day = String(today.getDate()).padStart(2, '0');
       const fileName = `Reporte_Sesiones_${year}-${month}-${day}.pdf`;
       doc.save(fileName);
-      
+
       console.log("PDF generado exitosamente");
     } catch (error) {
       console.error("Error al generar PDF:", error);
@@ -253,19 +253,64 @@ export default function SessionsTable() {
     }
   };
 
+  // Función para exportar a Excel
+  const exportToExcel = () => {
+    // Preparar datos para Excel
+    const excelData = filteredSessions.map((session) => ({
+      Usuario: session.displayName || "Usuario",
+      Correo: session.email || "N/A",
+      Método:
+        session.provider?.charAt(0).toUpperCase() + session.provider?.slice(1) ||
+        "Desconocido",
+      Fecha: formatDate(session.timestamp),
+      "Hora Entrada": formatTime(session.loginTime),
+      "Hora Salida": session.logoutTime
+        ? formatTime(session.logoutTime)
+        : "Activa",
+      Duración: session.logoutTime
+        ? calculateDuration(session.loginTime, session.logoutTime)
+        : calculateDuration(session.loginTime, null) + " (activa)",
+    }));
+
+    // Crear libro de trabajo
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+
+    // Ajustar ancho de columnas
+    const columnWidths = [
+      { wch: 20 }, // Usuario
+      { wch: 30 }, // Correo
+      { wch: 15 }, // Método
+      { wch: 15 }, // Fecha
+      { wch: 15 }, // Hora Entrada
+      { wch: 15 }, // Hora Salida
+      { wch: 20 }, // Duración
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Historial de Sesiones");
+
+    // Descargar el archivo
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    XLSX.writeFile(workbook, `Reporte_Sesiones_${year}-${month}-${day}.xlsx`);
+  };
+
   // Aplicar filtros
   const filteredSessions = sessions.filter((session) => {
     // Filtro por provider
     const matchesProvider = filter === "all" || session.provider === filter;
-    
+
     // Filtro por búsqueda
     const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = 
+    const matchesSearch =
       searchTerm === "" ||
       (session.displayName || "").toLowerCase().includes(searchLower) ||
       (session.email || "").toLowerCase().includes(searchLower) ||
       (session.provider || "").toLowerCase().includes(searchLower);
-    
+
     return matchesProvider && matchesSearch;
   });
 
@@ -305,7 +350,8 @@ export default function SessionsTable() {
               {exporting ? "Generando..." : "Exportar Pdf"}
             </button>
 
-             <button
+            <button
+              onClick={exportToExcel}
               className="bg-green-500 hover:bg-green-600 cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
               title="Exportar a Excel"
             >
@@ -339,11 +385,10 @@ export default function SessionsTable() {
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-              filter === "all"
+            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${filter === "all"
                 ? "bg-indigo-600 text-white"
                 : "bg-indigo-800 text-indigo-200 hover:bg-indigo-700"
-            }`}
+              }`}
           >
             Todos ({sessions.length})
           </button>
@@ -351,11 +396,10 @@ export default function SessionsTable() {
             <button
               key={provider}
               onClick={() => setFilter(provider)}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors capitalize ${
-                filter === provider
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors capitalize ${filter === provider
                   ? "bg-indigo-600 text-white"
                   : "bg-indigo-800 text-indigo-200 hover:bg-indigo-700"
-              }`}
+                }`}
             >
               {provider} ({sessions.filter((s) => s.provider === provider).length})
             </button>
@@ -408,8 +452,8 @@ export default function SessionsTable() {
             {filteredSessions.length === 0 ? (
               <tr>
                 <td colSpan="7" className="text-center py-8 text-gray-400">
-                  {searchTerm ? 
-                    `No se encontraron resultados para "${searchTerm}"` : 
+                  {searchTerm ?
+                    `No se encontraron resultados para "${searchTerm}"` :
                     "No hay sesiones registradas"
                   }
                 </td>

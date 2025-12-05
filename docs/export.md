@@ -229,6 +229,201 @@ import * as XLSX from "xlsx";
     });
   };
 ```
+#### 2. **Estructura del Reporte PDF**
+
+#### **Encabezado para el archivo pdf**
+
+- Título del reporte
+- Fecha de generación
+
+#### **Tabla de Datos**
+
+La tabla incluye las siguientes columnas:
+
+- Nombre
+- Apellido
+- Email 
+- Rol
+- Estado
+- Método de Acceso
+
+#### 3. **Estructura del Reporte en Excel**
+
+#### **Tabla de Datos**
+
+La tabla incluye las siguientes columnas:
+
+- Nombre
+- Apellido
+- Email 
+- Rol
+- Estado
+- Método de Acceso
+
+
+### **Implementación del codigo**
+
+
+```
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+
+```
+
+#### **Función Principal exportar en formato Pdf**
+
+```
+ const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    // Configurar fuente y colores
+    doc.setFontSize(18);
+    doc.setTextColor(40, 40, 40);
+    const primaryColor = [79, 70, 229];
+
+    // Encabezado del reporte
+    doc.setFontSize(20);
+    doc.setTextColor(...primaryColor);
+    doc.setFont("helvetica", "bold");
+    doc.text("Reporte de Usuarios", doc.internal.pageSize.getWidth() / 2, 20, {
+      align: "center",
+    });
+
+    // Fecha de generación
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    const fechaActual = new Date().toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    doc.text(`Fecha: ${fechaActual}`, 14, 28);
+
+    doc.setDrawColor(124, 58, 237);
+    doc.setLineWidth(0.5);
+    doc.line(14, 32, 196, 32);
+
+    // Preparar datos para la tabla
+    const tableData = usuarios.map((usuario) => [
+      usuario.nombre || "Usuario",
+      usuario.apellido || "",
+      usuario.correo || "N/A",
+      usuario.rol || "visitante",
+      usuario.estado || "pendiente",
+      usuario.metodo || "password",
+    ]);
+
+    // Generar tabla usando autoTable importado
+    autoTable(doc, {
+      startY: 38,
+      head: [["Nombre", "Apellido", "Email", "Rol", "Estado", "Método"]],
+      body: tableData,
+      theme: "striped",
+      headStyles: {
+        fillColor: primaryColor,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        fontSize: 9,
+        halign: "center",
+      },
+      bodyStyles: {
+        fontSize: 8,
+        textColor: [50, 50, 50],
+      },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250],
+      },
+      margin: { top: 10, left: 14, right: 14 },
+      styles: {
+        overflow: "linebreak",
+        cellPadding: 3,
+      },
+    });
+
+    // Pie de página con número de registros
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.setTextColor(150);
+      doc.text(
+        `Total de usuarios: ${usuarios.length} | Página ${i} de ${pageCount}`,
+        14,
+        doc.internal.pageSize.height - 10
+      );
+    }
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const fileName = `Reporte_Usuarios_${year}-${month}-${day}.pdf`;
+    doc.save(fileName);
+
+    Swal.fire({
+      icon: "success",
+      title: "PDF Generado",
+      text: "El archivo PDF se ha descargado correctamente",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  };  
+```
+
+#### **Función Principal exportar en formato excel**
+
+```
+ const exportToExcel = () => {
+    // Preparar datos para Excel
+    const excelData = usuarios.map((usuario) => ({
+      Nombre: usuario.nombre || "Usuario",
+      Apellido: usuario.apellido || "",
+      Email: usuario.correo || "N/A",
+      Rol: usuario.rol || "visitante",
+      Estado: usuario.estado || "pendiente",
+      Método: usuario.metodo || "password",
+      "Fecha de Creación": usuario.creado
+        ? new Date(usuario.creado.seconds * 1000).toLocaleDateString("es-ES")
+        : "N/A",
+    }));
+
+    // Crear libro de trabajo
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+
+    // Ajustar ancho de columnas
+    const columnWidths = [
+      { wch: 15 }, // Nombre
+      { wch: 15 }, // Apellido
+      { wch: 30 }, // Email
+      { wch: 12 }, // Rol
+      { wch: 12 }, // Estado
+      { wch: 12 }, // Método
+      { wch: 18 }, // Fecha
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Usuarios");
+
+    // Descargar el archivo
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    XLSX.writeFile(workbook, `Reporte_Usuarios_${year}-${month}-${day}.xlsx`);
+
+    Swal.fire({
+      icon: "success",
+      title: "Excel Generado",
+      text: "El archivo Excel se ha descargado correctamente",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  };
+```
 
 
 #### **Botones de implementación**
@@ -251,9 +446,193 @@ import * as XLSX from "xlsx";
   </button>
 ```
 
+## Componente de Staff
+
+### Características Implementadas
+
+#### 1. **Botones de Exportación**
+
+- Su ubicación es en la parte superior derecha de la tabla del módulo de staff.
+
+#### 2. **Estructura del Reporte PDF**
+
+#### **Encabezado para el archivo pdf**
+
+- Título del reporte: "Reporte de Staff"
+- Fecha de generación
+
+#### **Tabla de Datos**
+
+La tabla incluye las siguientes columnas:
+
+- Nombre
+- Email
+- Cargo
+
+#### 3. **Estructura del Reporte en Excel**
+
+#### **Tabla de Datos**
+
+La tabla incluye las siguientes columnas:
+
+- Nombre
+- Email
+- Cargo
+
+### **Implementación del codigo**
+
+```javascript
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+```
+
+#### **Función Principal exportar en formato Pdf**
+
+```javascript
+  // Función para exportar a PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    // Configurar fuente y colores
+    doc.setFontSize(18);
+    doc.setTextColor(40, 40, 40);
+    const primaryColor = [79, 70, 229];
+
+    // Encabezado del reporte
+    doc.setFontSize(20);
+    doc.setTextColor(...primaryColor);
+    doc.setFont("helvetica", "bold");
+    doc.text("Reporte de Staff", doc.internal.pageSize.getWidth() / 2, 20, {
+      align: "center",
+    });
+
+    // Fecha de generación
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    const fechaActual = new Date().toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    doc.text(`Fecha: ${fechaActual}`, 14, 28);
+
+    doc.setDrawColor(124, 58, 237);
+    doc.setLineWidth(0.5);
+    doc.line(14, 32, 196, 32);
+
+    // Preparar datos para la tabla
+    const tableData = staff.map((person) => [
+      person.name || "Sin nombre",
+      person.email || "N/A",
+      person.role || "Sin cargo",
+    ]);
+
+    // Generar tabla usando autoTable importado
+    autoTable(doc, {
+      startY: 38,
+      head: [["Nombre", "Email", "Cargo"]],
+      body: tableData,
+      theme: "striped",
+      headStyles: {
+        fillColor: primaryColor,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        fontSize: 9,
+        halign: "center",
+      },
+      bodyStyles: {
+        fontSize: 8,
+        textColor: [50, 50, 50],
+      },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250],
+      },
+      margin: { top: 10, left: 14, right: 14 },
+      styles: {
+        overflow: "linebreak",
+        cellPadding: 3,
+      },
+    });
+
+    // Pie de página con número de registros
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.setTextColor(150);
+      doc.text(
+        `Total de staff: ${staff.length} | Página ${i} de ${pageCount}`,
+        14,
+        doc.internal.pageSize.height - 10
+      );
+    }
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const fileName = `Reporte_Staff_${year}-${month}-${day}.pdf`;
+    doc.save(fileName);
+
+    Swal.fire({
+      icon: "success",
+      title: "PDF Generado",
+      text: "El archivo PDF se ha descargado correctamente",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  };
+```
+
+#### **Función Principal exportar en formato Excel**
+
+```javascript
+  // Función para exportar a Excel
+  const exportToExcel = () => {
+    // Preparar datos para Excel
+    const excelData = staff.map((person) => ({
+      Nombre: person.name || "Sin nombre",
+      Email: person.email || "N/A",
+      Cargo: person.role || "Sin cargo",
+    }));
+
+    // Crear libro de trabajo
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+
+    // Ajustar ancho de columnas
+    const columnWidths = [
+      { wch: 20 }, // Nombre
+      { wch: 30 }, // Email
+      { wch: 20 }, // Cargo
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Staff");
+
+    // Descargar el archivo
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    XLSX.writeFile(workbook, `Reporte_Staff_${year}-${month}-${day}.xlsx`);
+
+    Swal.fire({
+      icon: "success",
+      title: "Excel Generado",
+      text: "El archivo Excel se ha descargado correctamente",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  };
+```
+
 ## Componente de historial de sesiones
 
-### 1. **Botón de Exportación**
+### 1. **Botones de Exportación**
 
 - Su ubicación es en la parte superior derecha de la tabla del módulo de historial de sesiones.
 
@@ -279,12 +658,27 @@ La tabla incluye las siguientes columnas:
 - Hora Salida o estado "Activa" si la sesión está en curso
 - Duración
 
+### 3. **Estructura del Reporte en Excel**
+
+#### **Tabla de Datos**
+
+La tabla incluye las siguientes columnas:
+
+- Usuario
+- Correo
+- Método
+- Fecha
+- Hora Entrada
+- Hora Salida
+- Duración
+
 ### **Implementación del codigo**
 
 
-```
+```javascript
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 ```
 
 Función Principal
@@ -419,15 +813,70 @@ Función Principal
   };
 ```
 
-Botón de implementación
+```javascript
+  // Función para exportar a Excel
+  const exportToExcel = () => {
+    // Preparar datos para Excel
+    const excelData = filteredSessions.map((session) => ({
+      Usuario: session.displayName || "Usuario",
+      Correo: session.email || "N/A",
+      Método:
+        session.provider?.charAt(0).toUpperCase() + session.provider?.slice(1) ||
+        "Desconocido",
+      Fecha: formatDate(session.timestamp),
+      "Hora Entrada": formatTime(session.loginTime),
+      "Hora Salida": session.logoutTime
+        ? formatTime(session.logoutTime)
+        : "Activa",
+      Duración: session.logoutTime
+        ? calculateDuration(session.loginTime, session.logoutTime)
+        : calculateDuration(session.loginTime, null) + " (activa)",
+    }));
 
+    // Crear libro de trabajo
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+
+    // Ajustar ancho de columnas
+    const columnWidths = [
+      { wch: 20 }, // Usuario
+      { wch: 30 }, // Correo
+      { wch: 15 }, // Método
+      { wch: 15 }, // Fecha
+      { wch: 15 }, // Hora Entrada
+      { wch: 15 }, // Hora Salida
+      { wch: 20 }, // Duración
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Historial de Sesiones");
+
+    // Descargar el archivo
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    XLSX.writeFile(workbook, `Reporte_Sesiones_${year}-${month}-${day}.xlsx`);
+  };
 ```
+
+Botones de implementación
+
+```javascript
   <button
     onClick={exportToPDF}
     disabled={exporting || filteredSessions.length === 0}
     className="bg-red-500 hover:bg-red-600 cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
     title="Exportar a Pdf"
-        >
-        {exporting ? "Generando..." : "Exportar Pdf"}
-    </button>
+  >
+      {exporting ? "Generando..." : "Exportar Pdf"}
+  </button>
+
+  <button
+    onClick={exportToExcel}
+    className="bg-green-500 hover:bg-green-600 cursor-pointer disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+    title="Exportar a Excel"
+  >
+    Exportar Excel
+  </button>
 ```
